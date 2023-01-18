@@ -20,6 +20,7 @@
         border: none;
         background: transparent;
         width: 40px;
+        color: black;
     }
 }
 
@@ -31,7 +32,7 @@
 
     .car-block-header {
         gap: 15px;
-        // margin-bottom: 15px;
+        margin-bottom: 10px;
         @include flex-row();
     }
 
@@ -65,8 +66,8 @@
         .flag {
             background-image: url('../../public/icons/flag.png');
             background-repeat: no-repeat;
-            width: 80px;
-            height: 80px;
+            width: 75px;
+            height: 45px;
             background-size: contain;
             background-position: bottom;
         }
