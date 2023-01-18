@@ -1,17 +1,16 @@
 import { carBrands, carColors } from '../data/data';
-import { ICar } from '../global-components/interfaces';
+import { ICar, IState } from '../global-components/interfaces';
 import { renderCar, renderRaceBlock } from '../main-page/main-page';
 
 const base = 'http://127.0.0.1:3000';
 const garage = `${base}/garage`;
+const engine = `${base}/engine`;
 
-// const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
+window.addEventListener('load', async () => await fillGarage());
 
-export const state = {
-    cars: [] as ICar[],
+export const state: IState = {
+    cars: [],
 };
-
-// const raceBlock = document.querySelector('.race-block');
 
 export async function getCars() {
     return await fetch(`${garage}`)
@@ -21,13 +20,40 @@ export async function getCars() {
 
 export const fillGarage = async () => {
     await getCars();
-    console.log('state', state);
+    // console.log('state', state);
     console.log('state.garage', state.cars);
     const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
-    state.cars.forEach((item) => raceBlock.append(renderCar(item.name, item.color)));
+    state.cars.forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id)));
+
+    const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
+    carsAmount.value = `${state.cars.length}`;
 };
 
-window.addEventListener('load', async () => await fillGarage());
-// // fillGarage();
-// const raceBlock = createElement('div', 'race-block') as HTMLDivElement;
-// renderCar
+export const startDrive = async (id: string) => {
+    // await startEngine(id);
+    await animateCar(id);
+};
+
+export const startEngine = async (id: string) => {
+    return await fetch(`${engine}?id=${id}&status=started`, {
+        method: 'PATCH',
+    }).then((res) => res.json());
+};
+
+export const animateCar = async (id: string) => {
+    const driveData = await startEngine(id);
+    console.log('driveData', driveData);
+    const time = driveData.velocity * driveData.distance;
+    console.log('time', time);
+
+    const animateCar = [{ transform: 'translateX(0%)' }, { transform: 'translateX(100%)' }];
+
+    const animatedCarTiming = {
+        duration: time,
+        iterations: 1,
+    };
+
+    const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
+    car.animate(animateCar, animatedCarTiming);
+};
+
