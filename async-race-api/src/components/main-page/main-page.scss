@@ -25,34 +25,37 @@
 
 .car-block {
     border-bottom: 2px solid black;
-    gap: 15px;
+    // gap: 15px;
     width: 100%;
+    margin-bottom: 15px;
 
     .car-block-header {
         gap: 15px;
-        margin-bottom: 15px;
+        // margin-bottom: 15px;
         @include flex-row();
     }
 
     .car-main-block {
-        @include flex-row($justify: space-between);
+        @include flex-row($align: flex-end, $justify: space-between);
         padding-right: 100px;
 
         .car-main-btns-block {
             gap: 15px;
             @include flex-row();
             margin-right: 15px;
+            margin-bottom: 10px;
         }
 
         .car {
             flex: 1 1 auto;
             @include flex-row();
+            margin-bottom: -8px;
             .car-image {
                 display: block;
                 background-image: url('../../public/icons/car.svg');
-                width: 90px;
-                height: 80px;
-                background-size: contain;
+                width: 60px;
+                height: 60px;
+                background-size: cover;
                 background-repeat: no-repeat;
                 background-position: center;
             }
