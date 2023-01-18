@@ -7,6 +7,7 @@ import {
     createInput,
     createParagraph,
 } from '../../global-components/global-components';
+import { fillGarage, getCar } from '../../api/api';
 
 const createNavBlock = (): HTMLDivElement => {
     const navigation = createElement('div', 'nav') as HTMLDivElement;
@@ -20,10 +21,15 @@ const createCreationBlock = (): HTMLDivElement => {
     const blockCreation = createElement('div', 'block-creation') as HTMLDivElement;
     const carNameCreateInput = createInput('create-car-name', 'text', '', '', '', false) as HTMLInputElement;
     const carColorCreateInput = createInput('create-car-color', 'color', '', '', '', false) as HTMLInputElement;
-    const btnCreate = createInput('btn-create', 'submit', '', '', 'create', true) as HTMLButtonElement;
+    const btnCreate = createInput('btn-create', 'button', '', '', 'create', true) as HTMLButtonElement;
     const formCreate = createForm('form-create', 'form-create', '', 'post') as HTMLFormElement;
     formCreate.append(carColorCreateInput, btnCreate);
     blockCreation.append(carNameCreateInput, formCreate);
+
+    btnCreate.addEventListener('click', async () => {
+        await fillGarage();
+        console.log('ghgjgjgj')
+    });
     return blockCreation;
 };
 
@@ -37,9 +43,6 @@ const createUpdateBlock = (): HTMLDivElement => {
     blockUpdate.append(carNameUpdateInput, formUpdate);
     return blockUpdate;
 };
-
-// <input type="color"/>
-// <input type="submit" value="Выбрать">
 
 const createRaceBlock = (): HTMLDivElement => {
     const raceBtnsBlock = createElement('div', 'race-btns-block') as HTMLDivElement;

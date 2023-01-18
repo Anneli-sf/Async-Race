@@ -1,8 +1,8 @@
+import { getCar, state } from '../api/api';
+import { carBrands, carColors } from '../data/data';
 import { createButton, createElement, createInput, createParagraph } from '../global-components/global-components';
 import { renderHeader } from './header/header';
 import './main-page.scss';
-
-const wrapper = document.querySelector('.wrapper') as HTMLDivElement;
 
 const renderTitle = (): HTMLDivElement => {
     const raceHeader = createElement('div', 'race-header') as HTMLDivElement;
@@ -23,13 +23,20 @@ const renderTitle = (): HTMLDivElement => {
     return raceHeader;
 };
 
-const renderRaceBlock = (): HTMLDivElement => {
+export const renderRaceBlock = (
+    carNameText: string = carBrands[5],
+    carColor: string = carColors[8]
+): HTMLDivElement => {
     const raceBlock = createElement('div', 'race-block') as HTMLDivElement;
-    raceBlock.append(renderTitle(), renderCarBlock('bmw'));
+
+    raceBlock.append(
+        renderTitle() //, renderCar(carNameText, carColor)
+    );
+
     return raceBlock;
 };
 
-const renderCarBlock = (carNameText: string): HTMLDivElement => {
+export const renderCar = (carNameText: string, carColor: string): HTMLDivElement => {
     const carBlock = createElement('div', 'car-block') as HTMLDivElement;
     const carBlockHeader = createElement('div', 'car-block-header') as HTMLDivElement;
     const btnSelect = createButton('select', 'btn-select') as HTMLButtonElement;
@@ -46,6 +53,7 @@ const renderCarBlock = (carNameText: string): HTMLDivElement => {
 
     const car = createElement('div', 'car') as HTMLDivElement;
     const carImage = createElement('span', 'car-image') as HTMLSpanElement;
+    carColor ? (carImage.style.backgroundColor = carColor) : (carImage.style.backgroundColor = 'transparent');
     car.append(carImage);
     const flag = createElement('span', 'flag') as HTMLSpanElement;
 
@@ -60,5 +68,3 @@ export const renderMainPage = (): HTMLElement => {
     main.append(renderHeader(), renderRaceBlock());
     return main;
 };
-
-// createMainPage();
