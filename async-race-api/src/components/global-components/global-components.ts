@@ -30,6 +30,21 @@ export const createInput = (
     return input;
 };
 
+export const createForm = (
+    formClassname: string,
+    // formValue: string,
+    formName: string,
+    formAction: string,
+    formMethod: string
+): HTMLFormElement => {
+    const form = createElement('form', formClassname) as HTMLFormElement;
+    // form.value = formValue;
+    form.name = formName;
+    form.action = formAction;
+    form.method = formMethod;
+    return form;
+};
+
 export const createImage = (imgSrc: string, imgAlt: string, imgClass: string, id?: string): HTMLImageElement => {
     const image = createElement('img', imgClass) as HTMLImageElement;
     image.src = imgSrc;
