@@ -1,2 +1,36 @@
 @import '../../../sass/abstracts/mixins';
 
+.header {
+    @include flex-column();
+    width: 100%;
+    height: 100%;
+    margin-bottom: 30px;
+
+    .nav,
+    .block-creation,
+    .block-update,
+    .race-btns-block {
+        @include flex-row();
+        gap: 15px;
+        margin-bottom: 10px;
+
+        & > * {
+            cursor: pointer;
+        }
+    }
+
+    .form-update,
+    .form-create {
+        @include flex-row();
+        gap: 15px;
+
+        & > * {
+            cursor: pointer;
+        }
+    }
+
+    .nav,
+    .block-update {
+        margin-bottom: 20px;
+    }
+}
