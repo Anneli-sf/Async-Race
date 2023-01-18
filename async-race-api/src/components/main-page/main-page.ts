@@ -1,4 +1,4 @@
-import { getCar, state } from '../api/api';
+import { state } from '../api/api';
 import { carBrands, carColors } from '../data/data';
 import { createButton, createElement, createInput, createParagraph } from '../global-components/global-components';
 import { renderHeader } from './header/header';

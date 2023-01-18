@@ -7,7 +7,7 @@ import {
     createInput,
     createParagraph,
 } from '../../global-components/global-components';
-import { fillGarage, getCar } from '../../api/api';
+import { fillGarage } from '../../api/api';
 
 const createNavBlock = (): HTMLDivElement => {
     const navigation = createElement('div', 'nav') as HTMLDivElement;
@@ -27,8 +27,8 @@ const createCreationBlock = (): HTMLDivElement => {
     blockCreation.append(carNameCreateInput, formCreate);
 
     btnCreate.addEventListener('click', async () => {
-        await fillGarage();
-        console.log('ghgjgjgj')
+        // await fillGarage();
+        console.log('ghgjgjgj');
     });
     return blockCreation;
 };
