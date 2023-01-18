@@ -12,7 +12,7 @@ import { fillGarage } from '../../api/api';
 const createNavBlock = (): HTMLDivElement => {
     const navigation = createElement('div', 'nav') as HTMLDivElement;
     const btnToGarage = createButton('to garage', 'btn-to-garage') as HTMLButtonElement;
-    const btnToWinners = createButton('to garage', 'btn-to-winners') as HTMLButtonElement;
+    const btnToWinners = createButton('to winners', 'btn-to-winners') as HTMLButtonElement;
     navigation.append(btnToGarage, btnToWinners);
     return navigation;
 };

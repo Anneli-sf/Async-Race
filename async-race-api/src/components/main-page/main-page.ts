@@ -1,4 +1,4 @@
-import { state } from '../api/api';
+import { startDrive, state } from '../api/api';
 import { carBrands, carColors } from '../data/data';
 import { createButton, createElement, createInput, createParagraph } from '../global-components/global-components';
 import { renderHeader } from './header/header';
@@ -12,9 +12,11 @@ const renderTitle = (): HTMLDivElement => {
     const title = createElement('span', 'title') as HTMLSpanElement;
     title.innerText = `Garage`;
     const carsAmount = createInput('cars-amount', 'number', '', '', '0', true) as HTMLInputElement;
+    carsAmount.disabled = true;
     const page = createElement('span', 'page') as HTMLSpanElement;
     page.innerText = `Page`;
     const pageNumber = createInput('page-number', 'number', 'page-number', '', '1', true) as HTMLInputElement;
+    pageNumber.disabled = true;
 
     titleBlock.append(title, carsAmount);
     pageBlock.append(page, pageNumber);
@@ -36,7 +38,7 @@ export const renderRaceBlock = (
     return raceBlock;
 };
 
-export const renderCar = (carNameText: string, carColor: string): HTMLDivElement => {
+export const renderCar = (carNameText: string, carColor: string, carId: string): HTMLDivElement => {
     const carBlock = createElement('div', 'car-block') as HTMLDivElement;
     const carBlockHeader = createElement('div', 'car-block-header') as HTMLDivElement;
     const btnSelect = createButton('select', 'btn-select') as HTMLButtonElement;
@@ -48,11 +50,18 @@ export const renderCar = (carNameText: string, carColor: string): HTMLDivElement
     const carMainBlock = createElement('div', 'car-main-block') as HTMLDivElement;
     const carMainButtonsBlock = createElement('div', 'car-main-btns-block') as HTMLDivElement;
     const btnA = createButton('A', 'btn-a') as HTMLButtonElement;
+    btnA.id = `${carId}`;
     const btnB = createButton('B', 'btn-b') as HTMLButtonElement;
+    btnB.id = `${carId}`;
     carMainButtonsBlock.append(btnA, btnB);
+
+    btnA.addEventListener('click', async () => {
+        await startDrive(btnA.id);
+    });
 
     const car = createElement('div', 'car') as HTMLDivElement;
     const carImage = createElement('span', 'car-image') as HTMLSpanElement;
+    carImage.id = `car-${carId}`;
     carColor ? (carImage.style.backgroundColor = carColor) : (carImage.style.backgroundColor = 'transparent');
     car.append(carImage);
     const flag = createElement('span', 'flag') as HTMLSpanElement;
