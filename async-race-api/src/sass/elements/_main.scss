@@ -10,22 +10,13 @@ html {
     font-family: 'Neucha';
 }
 
-.body {
-    width: 100%;
-    height: 100%;
-    color: $colorBlack;
-    @include flex-column();
+// .body {
+//     width: 100%;
+//     height: 100%;
+//     color: $colorBlack;
+//     @include flex-column();
 
-    &::-webkit-scrollbar {
-        width: 0px;
-    }
-
-    .wrapper {
-        margin: 0 auto;
-        height: 100%;
-        width: 100vw;
-        @include flex-column();
-
-        
-    }
-}
+//     &::-webkit-scrollbar {
+//         width: 0px;
+//     }
+// }
