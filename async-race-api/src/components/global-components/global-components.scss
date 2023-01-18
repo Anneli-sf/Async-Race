@@ -1,4 +1,32 @@
 @import '../../sass/abstracts/mixins';
+@import '../../sass/base/variables';
+
+.body {
+    width: 100%;
+    height: 100%;
+    color: $colorBlack;
+    background-color: #c2b18d;
+    display: flex;
+    @include flex-column();
+    font-family: 'Neucha', sans-serif;
+
+    input,
+    button {
+        font-family: 'Neucha', sans-serif;
+    }
+
+    &::-webkit-scrollbar {
+        width: 0px;
+    }
+
+    .wrapper {
+        margin: 0 auto;
+        height: 100%;
+        width: 100vw;
+        max-width: 1600px;
+        @include flex-column();
+    }
+}
 
 .button {
     min-width: 10px;
@@ -21,4 +49,3 @@
     font-size: 1rem;
     cursor: pointer;
 }
-
