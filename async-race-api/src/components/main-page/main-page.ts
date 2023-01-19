@@ -50,14 +50,18 @@ export const renderCar = (carNameText: string, carColor: string, carId: string):
     const carMainBlock = createElement('div', 'car-main-block') as HTMLDivElement;
     const carMainButtonsBlock = createElement('div', 'car-main-btns-block') as HTMLDivElement;
     const btnA = createButton('A', 'btn-a') as HTMLButtonElement;
-    btnA.id = `${carId}`;
+    btnA.id = `a${carId}`;
     const btnB = createButton('B', 'btn-b') as HTMLButtonElement;
-    btnB.id = `${carId}`;
+    btnB.id = `b${carId}`;
     carMainButtonsBlock.append(btnA, btnB);
 
-    btnA.addEventListener('click', async () => {
-        await startDrive(btnA.id);
+    btnA.addEventListener('click', async (e: Event) => {
+        await startDrive(e, btnA.id.slice(1));
     });
+
+    // btnB.addEventListener('click', async (e) => {
+    //     await startDrive(e, btnA.id);
+    // });
 
     const car = createElement('div', 'car') as HTMLDivElement;
     const carImage = createElement('span', 'car-image') as HTMLSpanElement;

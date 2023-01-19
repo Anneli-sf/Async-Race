@@ -29,29 +29,50 @@ export const fillGarage = async () => {
     carsAmount.value = `${state.cars.length}`;
 };
 
-export const startDrive = async (id: string) => {
-    // await startEngine(id);
-    await animateCar(id);
+export const startDrive = async (e: Event, id: string) => {
+    console.log(e.target);
+    const btnA = e.target as HTMLButtonElement;
+    const btnB = document.querySelector(`#b${id}`) as HTMLButtonElement;
+    let params;
+    let animation: Animation;
+
+    if (btnA && btnA.className === 'btn-a') {
+        params = await requestEngineParams(id, 'started');
+        animation = await animateCar(id, params.velocity);
+        await requestToDrive(id);
+        animation.play();
+
+        btnB.addEventListener('click', () => {
+            animation.cancel();
+        });
+    }
 };
 
-export const startEngine = async (id: string) => {
-    return await fetch(`${engine}?id=${id}&status=started`, {
+export const requestEngineParams = async (id: string, status: string) => {
+    return await fetch(`${engine}?id=${id}&status=${status}`, {
         method: 'PATCH',
     }).then((res) => res.json());
 };
 
-export const animateCar = async (id: string) => {
-    const driveData = await startEngine(id);
+export const requestToDrive = async (id: string) => {
+    return await fetch(`${engine}?id=${id}&status=drive`, {
+        method: 'PATCH',
+    }).then((res) => res.json());
+};
 
+export const animateCar = async (id: string, velocity: number) => {
     const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
-    const findDistance = car.parentElement as HTMLDivElement;
-    const distance: number = findDistance.offsetWidth;
+    const parentEl = car.parentElement as HTMLDivElement;
+    const pathWidth: number = parentEl.offsetWidth;
     // console.log(distance);
-    const time = distance / driveData.velocity;
+    const time = pathWidth / velocity;
     // console.log(time);
 
-    car.animate([{ transform: 'translate(0px)' }, { transform: `translate(${distance + car.offsetWidth}px)` }], {
-        duration: time * 1000,
-        fill: 'forwards',
-    });
+    const carKeyframes = new KeyframeEffect(
+        car,
+        [{ transform: 'translateY(0%)' }, { transform: `translate(${pathWidth + car.offsetWidth}px)` }],
+        { duration: time * 1000, fill: 'forwards' }
+    );
+    const carAnimation = new Animation(carKeyframes, document.timeline);
+    return carAnimation;
 };
