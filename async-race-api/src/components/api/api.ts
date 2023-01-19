@@ -42,18 +42,16 @@ export const startEngine = async (id: string) => {
 
 export const animateCar = async (id: string) => {
     const driveData = await startEngine(id);
-    console.log('driveData', driveData);
-    const time = driveData.velocity * driveData.distance;
-    console.log('time', time);
-
-    const animateCar = [{ transform: 'translateX(0%)' }, { transform: 'translateX(100%)' }];
-
-    const animatedCarTiming = {
-        duration: time,
-        iterations: 1,
-    };
 
     const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
-    car.animate(animateCar, animatedCarTiming);
-};
+    const findDistance = car.parentElement as HTMLDivElement;
+    const distance: number = findDistance.offsetWidth;
+    // console.log(distance);
+    const time = distance / driveData.velocity;
+    // console.log(time);
 
+    car.animate([{ transform: 'translate(0px)' }, { transform: `translate(${distance + car.offsetWidth}px)` }], {
+        duration: time * 1000,
+        fill: 'forwards',
+    });
+};
