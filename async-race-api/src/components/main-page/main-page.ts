@@ -4,7 +4,7 @@ import { createButton, createElement, createInput, createParagraph } from '../gl
 import { renderHeader } from './header/header';
 import './main-page.scss';
 
-const renderTitle = (): HTMLDivElement => {
+export const renderTitle = (): HTMLDivElement => {
     const raceHeader = createElement('div', 'race-header') as HTMLDivElement;
     const titleBlock = createElement('div', 'title-block') as HTMLDivElement;
     const pageBlock = createElement('div', 'page-block') as HTMLDivElement;

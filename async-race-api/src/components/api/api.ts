@@ -1,6 +1,7 @@
 import { carBrands, carColors } from '../data/data';
 import { ICar, IState } from '../global-components/interfaces';
-import { renderCar, renderRaceBlock } from '../main-page/main-page';
+import { generateColor } from '../helpers/helpers';
+import { renderCar, renderRaceBlock, renderTitle } from '../main-page/main-page';
 
 const base = 'http://127.0.0.1:3000';
 const garage = `${base}/garage`;
@@ -20,9 +21,13 @@ export async function getCars() {
 
 export const fillGarage = async () => {
     await getCars();
-    // console.log('state', state);
-    console.log('state.garage', state.cars);
+    updateGarage();
+};
+
+export const updateGarage = () => {
     const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
+    raceBlock.innerHTML = ``;
+    raceBlock.append(renderTitle());
     state.cars.forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id)));
 
     const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
@@ -50,7 +55,6 @@ export const setCarActivity = async (e: Event, id: string) => {
         if (!successStatus) {
             animation.pause();
         }
-
     }
 };
 
@@ -81,4 +85,32 @@ export const animateCar = async (id: string, velocity: number) => {
     );
     const carAnimation = new Animation(carKeyframes, document.timeline);
     return carAnimation;
+};
+
+export const createCar = async () => {
+    const carName = document.querySelector('.create-car-name') as HTMLInputElement;
+    const carColor = document.querySelector('.create-car-color') as HTMLInputElement;
+
+    carColor.value === '#ffffff' ? (carColor.value = generateColor()) : carColor.value;
+    carName.value === '' ? (carName.value = carBrands[8]) : carName.value;
+    // console.log('carName.value, carColor.value', carName.value, carColor.value);
+
+    const body: ICar = {
+        name: carName.value,
+        color: carColor.value,
+        id: `${state.cars.length + 1}`,
+    };
+    await requestCreateCar(body);
+    // console.log(state);
+    updateGarage();
+};
+
+export const requestCreateCar = async (body: ICar) => {
+    return await fetch(`${garage}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    })
+        .then((res) => res.json())
+        .then((car) => (state.cars = state.cars.concat(car)));
 };
