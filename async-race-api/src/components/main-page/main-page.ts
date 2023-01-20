@@ -38,7 +38,7 @@ export const renderRaceBlock = (
     return raceBlock;
 };
 
-export const renderCar = (carNameText: string, carColor: string, carId: string): HTMLDivElement => {
+export const renderCar = (carNameText: string, carColor: string, carId: number): HTMLDivElement => {
     const carBlock = createElement('div', 'car-block') as HTMLDivElement;
     const carBlockHeader = createElement('div', 'car-block-header') as HTMLDivElement;
     const btnSelect = createButton('select', 'btn-select') as HTMLButtonElement;
@@ -59,10 +59,10 @@ export const renderCar = (carNameText: string, carColor: string, carId: string):
     btnA.addEventListener('click', async (e: Event) => {
         btnA.disabled = true;
         btnB.disabled = false;
-        await setCarActivity(e, btnA.id.slice(1));
+        await setCarActivity(e, +btnA.id.slice(1));
     });
 
-    btnB.addEventListener('click', async (e) => {
+    btnB.addEventListener('click', async () => {
         btnA.disabled = false;
         btnB.disabled = true;
         // await startDrive(e, btnA.id);

@@ -34,7 +34,7 @@ export const updateGarage = () => {
     carsAmount.value = `${state.cars.length}`;
 };
 
-export const setCarActivity = async (e: Event, id: string) => {
+export const setCarActivity = async (e: Event, id: number) => {
     console.log(e.target);
     const btnA = e.target as HTMLButtonElement;
     const btnB = document.querySelector(`#b${id}`) as HTMLButtonElement;
@@ -44,6 +44,7 @@ export const setCarActivity = async (e: Event, id: string) => {
     if (btnA && btnA.className === 'btn-a') {
         params = await requestEngineParams(id, 'started');
         animation = await animateCar(id, params.velocity);
+        console.log(params);
         animation.play();
 
         btnB.addEventListener('click', () => {
@@ -51,26 +52,28 @@ export const setCarActivity = async (e: Event, id: string) => {
             animation.cancel();
         });
 
-        const { successStatus } = await requestToDrive(id);
-        if (!successStatus) {
+        const successStatus = await requestToDrive(id);
+        console.log(successStatus);
+        if (!successStatus.success) {
             animation.pause();
         }
     }
 };
 
-export const requestEngineParams = async (id: string, status: string) => {
+export const requestEngineParams = async (id: number, status: string) => {
+    console.log('engine', engine);
     return await fetch(`${engine}?id=${id}&status=${status}`, {
         method: 'PATCH',
     }).then((res) => res.json());
 };
 
-export const requestToDrive = async (id: string) => {
+export const requestToDrive = async (id: number) => {
     return await fetch(`${engine}?id=${id}&status=drive`, {
         method: 'PATCH',
     }).then((res) => res.json());
 };
 
-export const animateCar = async (id: string, velocity: number) => {
+export const animateCar = async (id: number, velocity: number) => {
     const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
     const parentEl = car.parentElement as HTMLDivElement;
     const pathWidth: number = parentEl.offsetWidth;
@@ -98,11 +101,14 @@ export const createCar = async () => {
     const body: ICar = {
         name: carName.value,
         color: carColor.value,
-        id: `${state.cars.length + 1}`,
+        id: state.cars.length + 1,
     };
     await requestCreateCar(body);
-    // console.log(state);
+   
     updateGarage();
+    carColor.value = '#ffffff';
+    carName.value = '';
+    console.log(state, body);
 };
 
 export const requestCreateCar = async (body: ICar) => {
