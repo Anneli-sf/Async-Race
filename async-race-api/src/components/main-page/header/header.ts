@@ -21,10 +21,11 @@ const createCreationBlock = (): HTMLDivElement => {
     const blockCreation = createElement('div', 'block-creation') as HTMLDivElement;
     const carNameCreateInput = createInput('create-car-name', 'text', '', '', '', false) as HTMLInputElement;
     const carColorCreateInput = createInput('create-car-color', 'color', '', '', '', false) as HTMLInputElement;
-    const btnCreate = createInput('btn-create', 'button', '', '', 'create', true) as HTMLButtonElement;
-    const formCreate = createForm('form-create', 'form-create', '', 'post') as HTMLFormElement;
-    formCreate.append(carColorCreateInput, btnCreate);
-    blockCreation.append(carNameCreateInput, formCreate);
+    // const btnCreate = createInput('btn-create', 'button', '', '', 'create', true) as HTMLButtonElement;
+    const btnCreate = createButton('create', 'btn-create') as HTMLButtonElement;
+    // const formCreate = createForm('form-create', 'form-create', '', 'post') as HTMLFormElement;
+    // formCreate.append(carColorCreateInput, btnCreate);
+    blockCreation.append(carNameCreateInput, carColorCreateInput, btnCreate);
 
     btnCreate.addEventListener('click', async () => {
         // await fillGarage();
@@ -37,10 +38,11 @@ const createUpdateBlock = (): HTMLDivElement => {
     const blockUpdate = createElement('div', 'block-update') as HTMLDivElement;
     const carNameUpdateInput = createInput('update-car-name', 'text', '', '', '', false) as HTMLInputElement;
     const carColorUpdateInput = createInput('update-car-color', 'color', '', '', '', false) as HTMLInputElement;
-    const btnUpdate = createInput('btn-update', 'submit', '', '', 'update', true) as HTMLButtonElement;
-    const formUpdate = createForm('form-update', 'form-update', '', 'post') as HTMLFormElement;
-    formUpdate.append(carColorUpdateInput, btnUpdate);
-    blockUpdate.append(carNameUpdateInput, formUpdate);
+    // const btnUpdate = createInput('btn-update', 'submit', '', '', 'update', true) as HTMLButtonElement;
+    const btnUpdate = createButton('update', 'btn-update') as HTMLButtonElement;
+    // const formUpdate = createForm('form-update', 'form-update', '', 'post') as HTMLFormElement;
+    // formUpdate.append(carColorUpdateInput, btnUpdate);
+    blockUpdate.append(carNameUpdateInput, carColorUpdateInput, btnUpdate);
     return blockUpdate;
 };
 
