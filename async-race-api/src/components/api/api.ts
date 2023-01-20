@@ -29,7 +29,7 @@ export const fillGarage = async () => {
     carsAmount.value = `${state.cars.length}`;
 };
 
-export const startDrive = async (e: Event, id: string) => {
+export const setCarActivity = async (e: Event, id: string) => {
     console.log(e.target);
     const btnA = e.target as HTMLButtonElement;
     const btnB = document.querySelector(`#b${id}`) as HTMLButtonElement;
@@ -39,12 +39,18 @@ export const startDrive = async (e: Event, id: string) => {
     if (btnA && btnA.className === 'btn-a') {
         params = await requestEngineParams(id, 'started');
         animation = await animateCar(id, params.velocity);
-        await requestToDrive(id);
         animation.play();
 
         btnB.addEventListener('click', () => {
+            requestEngineParams(id, 'stopped');
             animation.cancel();
         });
+
+        const { successStatus } = await requestToDrive(id);
+        if (!successStatus) {
+            animation.pause();
+        }
+
     }
 };
 

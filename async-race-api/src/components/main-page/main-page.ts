@@ -1,4 +1,4 @@
-import { startDrive, state } from '../api/api';
+import { setCarActivity } from '../api/api';
 import { carBrands, carColors } from '../data/data';
 import { createButton, createElement, createInput, createParagraph } from '../global-components/global-components';
 import { renderHeader } from './header/header';
@@ -53,15 +53,20 @@ export const renderCar = (carNameText: string, carColor: string, carId: string):
     btnA.id = `a${carId}`;
     const btnB = createButton('B', 'btn-b') as HTMLButtonElement;
     btnB.id = `b${carId}`;
+    btnB.disabled = true;
     carMainButtonsBlock.append(btnA, btnB);
 
     btnA.addEventListener('click', async (e: Event) => {
-        await startDrive(e, btnA.id.slice(1));
+        btnA.disabled = true;
+        btnB.disabled = false;
+        await setCarActivity(e, btnA.id.slice(1));
     });
 
-    // btnB.addEventListener('click', async (e) => {
-    //     await startDrive(e, btnA.id);
-    // });
+    btnB.addEventListener('click', async (e) => {
+        btnA.disabled = false;
+        btnB.disabled = true;
+        // await startDrive(e, btnA.id);
+    });
 
     const car = createElement('div', 'car') as HTMLDivElement;
     const carImage = createElement('span', 'car-image') as HTMLSpanElement;
