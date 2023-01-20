@@ -1,4 +1,4 @@
-import { setCarActivity } from '../api/api';
+import { deleteCar, setCarActivity } from '../api/api';
 import { carBrands, carColors } from '../data/data';
 import { createButton, createElement, createInput, createParagraph } from '../global-components/global-components';
 import { renderHeader } from './header/header';
@@ -25,10 +25,7 @@ export const renderTitle = (): HTMLDivElement => {
     return raceHeader;
 };
 
-export const renderRaceBlock = (
-    carNameText: string = carBrands[5],
-    carColor: string = carColors[8]
-): HTMLDivElement => {
+export const renderRaceBlock = (): HTMLDivElement => {
     const raceBlock = createElement('div', 'race-block') as HTMLDivElement;
 
     raceBlock.append(
@@ -43,6 +40,7 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
     const carBlockHeader = createElement('div', 'car-block-header') as HTMLDivElement;
     const btnSelect = createButton('select', 'btn-select') as HTMLButtonElement;
     const btnRemove = createButton('remove', 'btn-remove') as HTMLButtonElement;
+    btnRemove.id = `remove${carId}`;
     const carName = createElement('span', 'car-name') as HTMLSpanElement;
     carName.innerHTML = carNameText;
     carBlockHeader.append(btnSelect, btnRemove, carName);
@@ -55,6 +53,11 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
     btnB.id = `b${carId}`;
     btnB.disabled = true;
     carMainButtonsBlock.append(btnA, btnB);
+
+    btnRemove.addEventListener('click', async (e) => {
+        console.log(btnRemove.id.slice(6));
+        await deleteCar(e, +btnRemove.id.slice(6));
+    });
 
     btnA.addEventListener('click', async (e: Event) => {
         btnA.disabled = true;

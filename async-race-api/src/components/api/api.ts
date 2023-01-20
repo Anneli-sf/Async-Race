@@ -13,14 +13,14 @@ export const state: IState = {
     cars: [],
 };
 
-export async function getCars() {
+export async function requestGetCars() {
     return await fetch(`${garage}`)
         .then((res) => res.json())
         .then((car) => (state.cars = state.cars.concat(car)));
 }
 
 export const fillGarage = async () => {
-    await getCars();
+    await requestGetCars();
     updateGarage();
 };
 
@@ -32,6 +32,7 @@ export const updateGarage = () => {
 
     const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
     carsAmount.value = `${state.cars.length}`;
+    console.log('update works');
 };
 
 export const setCarActivity = async (e: Event, id: number) => {
@@ -52,28 +53,29 @@ export const setCarActivity = async (e: Event, id: number) => {
             animation.cancel();
         });
 
-        const successStatus = await requestToDrive(id);
-        console.log(successStatus);
-        if (!successStatus.success) {
+        try {
+            const successStatus = await requestToDrive(id);
+            console.log(successStatus);
+        } catch (error) {
             animation.pause();
         }
     }
 };
 
-export const requestEngineParams = async (id: number, status: string) => {
+const requestEngineParams = async (id: number, status: string) => {
     console.log('engine', engine);
     return await fetch(`${engine}?id=${id}&status=${status}`, {
         method: 'PATCH',
     }).then((res) => res.json());
 };
 
-export const requestToDrive = async (id: number) => {
+const requestToDrive = async (id: number) => {
     return await fetch(`${engine}?id=${id}&status=drive`, {
         method: 'PATCH',
     }).then((res) => res.json());
 };
 
-export const animateCar = async (id: number, velocity: number) => {
+const animateCar = async (id: number, velocity: number) => {
     const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
     const parentEl = car.parentElement as HTMLDivElement;
     const pathWidth: number = parentEl.offsetWidth;
@@ -91,27 +93,29 @@ export const animateCar = async (id: number, velocity: number) => {
 };
 
 export const createCar = async () => {
+   
     const carName = document.querySelector('.create-car-name') as HTMLInputElement;
     const carColor = document.querySelector('.create-car-color') as HTMLInputElement;
 
     carColor.value === '#ffffff' ? (carColor.value = generateColor()) : carColor.value;
     carName.value === '' ? (carName.value = carBrands[8]) : carName.value;
     // console.log('carName.value, carColor.value', carName.value, carColor.value);
-
+    console.log(state.cars[state.cars.length - 1].id);
     const body: ICar = {
         name: carName.value,
         color: carColor.value,
-        id: state.cars.length + 1,
+        id: state.cars[state.cars.length - 1].id + 1,
     };
     await requestCreateCar(body);
-   
+
     updateGarage();
+    // await fillGarage();
     carColor.value = '#ffffff';
     carName.value = '';
     console.log(state, body);
 };
 
-export const requestCreateCar = async (body: ICar) => {
+const requestCreateCar = async (body: ICar) => {
     return await fetch(`${garage}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -119,4 +123,20 @@ export const requestCreateCar = async (body: ICar) => {
     })
         .then((res) => res.json())
         .then((car) => (state.cars = state.cars.concat(car)));
+};
+
+const requestDeleteCar = async (id: number) => {
+    return await fetch(`${garage}/${id}`, {
+        method: 'DELETE',
+    }).then((res) => res.json());
+};
+
+export const deleteCar = async (e: Event, id: number) => {
+    const btnRemove = e.target as HTMLButtonElement;
+    if (btnRemove && btnRemove.id == `remove${id}`) {
+        await requestDeleteCar(id);
+        state.cars = state.cars.filter((item) => item.id !== id);
+        updateGarage();
+        console.log(state);
+    }
 };
