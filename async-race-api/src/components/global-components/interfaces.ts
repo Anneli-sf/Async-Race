@@ -6,4 +6,5 @@ export interface ICar {
 
 export interface IState {
     cars: ICar[];
+    selectedCar: ICar;
 }
