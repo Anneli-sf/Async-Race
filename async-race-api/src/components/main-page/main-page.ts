@@ -1,6 +1,5 @@
-import { deleteCar, setCarActivity } from '../api/api';
-import { carBrands, carColors } from '../data/data';
-import { createButton, createElement, createInput, createParagraph } from '../global-components/global-components';
+import { deleteCar, selectCar, setCarActivity } from '../api/api';
+import { createButton, createElement, createInput } from '../global-components/global-components';
 import { renderHeader } from './header/header';
 import './main-page.scss';
 
@@ -27,11 +26,7 @@ export const renderTitle = (): HTMLDivElement => {
 
 export const renderRaceBlock = (): HTMLDivElement => {
     const raceBlock = createElement('div', 'race-block') as HTMLDivElement;
-
-    raceBlock.append(
-        renderTitle() //, renderCar(carNameText, carColor)
-    );
-
+    raceBlock.append(renderTitle());
     return raceBlock;
 };
 
@@ -41,6 +36,7 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
     const btnSelect = createButton('select', 'btn-select') as HTMLButtonElement;
     const btnRemove = createButton('remove', 'btn-remove') as HTMLButtonElement;
     btnRemove.id = `remove${carId}`;
+    btnSelect.id = `select${carId}`;
     const carName = createElement('span', 'car-name') as HTMLSpanElement;
     carName.innerHTML = carNameText;
     carBlockHeader.append(btnSelect, btnRemove, carName);
@@ -54,11 +50,6 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
     btnB.disabled = true;
     carMainButtonsBlock.append(btnA, btnB);
 
-    btnRemove.addEventListener('click', async (e) => {
-        console.log(btnRemove.id.slice(6));
-        await deleteCar(e, +btnRemove.id.slice(6));
-    });
-
     btnA.addEventListener('click', async (e: Event) => {
         btnA.disabled = true;
         btnB.disabled = false;
@@ -69,6 +60,14 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
         btnA.disabled = false;
         btnB.disabled = true;
         // await startDrive(e, btnA.id);
+    });
+
+    btnRemove.addEventListener('click', async (e) => {
+        await deleteCar(e, +btnRemove.id.slice(6));
+    });
+
+    btnSelect.addEventListener('click', async (e) => {
+        await selectCar(e, +btnSelect.id.slice(6));
     });
 
     const car = createElement('div', 'car') as HTMLDivElement;

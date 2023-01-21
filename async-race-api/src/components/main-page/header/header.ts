@@ -7,7 +7,7 @@ import {
     createInput,
     createParagraph,
 } from '../../global-components/global-components';
-import { createCar, fillGarage } from '../../api/api';
+import { createCar, fillGarage, updateCar } from '../../api/api';
 import { getInputValue } from '../../helpers/helpers';
 
 const createNavBlock = (): HTMLDivElement => {
@@ -38,6 +38,10 @@ const createUpdateBlock = (): HTMLDivElement => {
     const carColorUpdateInput = createInput('update-car-color', 'color', '', '', '#ffffff', false) as HTMLInputElement;
     const btnUpdate = createButton('update', 'btn-update') as HTMLButtonElement;
     blockUpdate.append(carNameUpdateInput, carColorUpdateInput, btnUpdate);
+
+    btnUpdate.addEventListener('click', async () => {
+        await updateCar();
+    });
     return blockUpdate;
 };
 
