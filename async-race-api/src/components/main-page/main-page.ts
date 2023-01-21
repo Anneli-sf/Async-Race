@@ -1,5 +1,5 @@
 import { deleteCar, selectCar, setCarActivity } from '../api/api';
-import { createButton, createElement, createInput } from '../global-components/global-components';
+import { createButton, createElement, createInput, createSVG } from '../global-components/global-components';
 import { renderHeader } from './header/header';
 import './main-page.scss';
 
@@ -59,7 +59,6 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
     btnB.addEventListener('click', async () => {
         btnA.disabled = false;
         btnB.disabled = true;
-        // await startDrive(e, btnA.id);
     });
 
     btnRemove.addEventListener('click', async (e) => {
@@ -71,9 +70,8 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
     });
 
     const car = createElement('div', 'car') as HTMLDivElement;
-    const carImage = createElement('span', 'car-image') as HTMLSpanElement;
-    carImage.id = `car-${carId}`;
-    carColor ? (carImage.style.backgroundColor = carColor) : (carImage.style.backgroundColor = 'transparent');
+    const carImage = createSVG('car-image', `car-${carId}`) as SVGElement;
+    carColor ? (carImage.style.fill = carColor) : (carImage.style.fill = 'transparent');
     car.append(carImage);
     const flag = createElement('span', 'flag') as HTMLSpanElement;
 

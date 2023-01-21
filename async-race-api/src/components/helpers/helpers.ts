@@ -1,3 +1,4 @@
+import { state } from '../api/api';
 export const generateColor = (): string => {
     return '#' + (Math.random().toString(16) + '000000').substring(2, 8).toUpperCase();
 };
@@ -5,4 +6,17 @@ export const generateColor = (): string => {
 export const getInputValue = (e: Event): string => {
     const input = e.target as HTMLInputElement;
     return input.value;
+};
+
+export const cleanInputs = (inputColorClass: string, inputNameClass: string) => {
+    const currentCarColor = document.querySelector(inputColorClass) as HTMLInputElement;
+    const currentCarName = document.querySelector(inputNameClass) as HTMLInputElement;
+    currentCarColor.value = '#ffffff';
+    currentCarName.value = '';
+};
+
+export const setSelectedCarParams = (name: string, color: string, carId?: number) => {
+    state.selectedCar.name = name;
+    state.selectedCar.color = color;
+    carId ? (state.selectedCar.id = carId) : (state.selectedCar.id = -1);
 };
