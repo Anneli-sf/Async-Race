@@ -14,6 +14,16 @@
     button {
         font-family: 'Neucha', sans-serif;
         cursor: pointer;
+
+        &:hover,
+        &:active {
+            border: 1px solid black;
+            font-weight: 600;
+        }
+
+        &:disabled:hover {
+            border: none;
+        }
     }
 
     &::-webkit-scrollbar {

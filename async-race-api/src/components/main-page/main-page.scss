@@ -13,6 +13,7 @@
     .page-block {
         gap: 15px;
         @include flex-row();
+        font-size: 19px;
     }
 
     .cars-amount,
@@ -21,19 +22,29 @@
         background: transparent;
         width: 40px;
         color: black;
+        font-size: 19px;
     }
 }
 
 .car-block {
     border-bottom: 2px solid black;
-    // gap: 15px;
+    padding: 5px 5px 0px 5px;
     width: 100%;
     margin-bottom: 15px;
+    background-color: #b097734f;
+    -webkit-box-shadow: 0px 7px 16px 2px rgba(101, 63, 7, 1);
+    -moz-box-shadow: 0px 7px 16px 2px rgba(101, 63, 7, 1);
+    box-shadow: 0px 5px 5px 0px rgb(101 63 7 / 43%);
 
     .car-block-header {
         gap: 15px;
         margin-bottom: 10px;
         @include flex-row();
+
+        .car-name {
+            // box-shadow: 0px 7px 16px 2px rgba(101, 63, 7, 0.09);
+            font-weight: 600;
+        }
     }
 
     .car-main-block {
@@ -53,15 +64,14 @@
             margin-bottom: -8px;
             .car-image {
                 display: block;
-                background-image: url('../../public/icons/car.svg');
-                width: 60px;
-                height: 60px;
+                // background-image: url('../../public/icons/car.svg');
+                // width: 60px;
+                // height: 60px;
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-position: center;
             }
         }
-        
 
         .flag {
             background-image: url('../../public/icons/flag.png');
