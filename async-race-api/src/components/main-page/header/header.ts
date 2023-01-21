@@ -7,7 +7,7 @@ import {
     createInput,
     createParagraph,
 } from '../../global-components/global-components';
-import { createCar, fillGarage, updateCar } from '../../api/api';
+import { create100Cars, createCar, fillGarage, setCarsAmount, updateCar } from '../../api/api';
 import { getInputValue } from '../../helpers/helpers';
 
 const createNavBlock = (): HTMLDivElement => {
@@ -27,7 +27,6 @@ const createCreationBlock = (): HTMLDivElement => {
 
     btnCreate.addEventListener('click', async () => {
         await createCar();
-        // console.log('ghgjgjgj');
     });
     return blockCreation;
 };
@@ -51,6 +50,11 @@ const createRaceBlock = (): HTMLDivElement => {
     const btnReset = createButton('reset', 'btn-reset') as HTMLButtonElement;
     const btnGenerateCars = createButton('generate cars', 'btn-generate-cars') as HTMLButtonElement;
     raceBtnsBlock.append(btnRace, btnReset, btnGenerateCars);
+
+    btnGenerateCars.addEventListener('click', async () => {
+        await create100Cars();
+    });
+
     return raceBtnsBlock;
 };
 

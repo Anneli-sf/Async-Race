@@ -1,6 +1,6 @@
 import { carBrands, carColors } from '../data/data';
 import { ICar, IState } from '../global-components/interfaces';
-import { generateColor } from '../helpers/helpers';
+import { cleanInputs, generateColor, generateName, setSelectedCarParams } from '../helpers/helpers';
 import { renderCar, renderTitle } from '../main-page/main-page';
 
 const base = 'http://127.0.0.1:3000';
@@ -19,7 +19,8 @@ export const state: IState = {
 };
 
 export async function requestGetCars() {
-    return await fetch(`${garage}`)
+    //page = 1, limit = 7
+    return await fetch(`${garage}`) //...?_page=${page}&_limit=${limit}
         .then((res) => res.json())
         .then((car) => (state.cars = state.cars.concat(car)));
 }
@@ -35,6 +36,10 @@ export const updateGarage = () => {
     raceBlock.append(renderTitle());
     state.cars.forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id)));
 
+    setCarsAmount();
+};
+
+export const setCarsAmount = async () => {
     const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
     carsAmount.value = `${state.cars.length}`;
 };
@@ -67,7 +72,7 @@ export const setCarActivity = async (e: Event, id: number) => {
 };
 
 const requestEngineParams = async (id: number, status: string) => {
-    console.log('engine', engine);
+    // console.log('engine', engine);
     return await fetch(`${engine}?id=${id}&status=${status}`, {
         method: 'PATCH',
     }).then((res) => res.json());
@@ -89,33 +94,46 @@ const animateCar = async (id: number, velocity: number) => {
 
     const carKeyframes = new KeyframeEffect(
         car,
-        [{ transform: 'translateY(0%)' }, { transform: `translate(${pathWidth + car.offsetWidth}px)` }],
+        [{ transform: 'translateY(0%)' }, { transform: `translate(${pathWidth + 60}px)` }],
         { duration: time * 1000, fill: 'forwards' }
     );
     const carAnimation = new Animation(carKeyframes, document.timeline);
     return carAnimation;
 };
 
-export const createCar = async () => {
+export const create100Cars = async () => {
+    const cars: ICar[] = [];
+    let i = 0;
+    while (i < 100) {
+        cars.push(createCarParams());
+        i++;
+    }
+    console.log(cars);
+    cars.forEach((car, index) => (car.id = state.cars[state.cars.length - 1].id + 1 + index));
+    cars.forEach(async (car) => await requestCreateCar(car));
+    state.cars = state.cars.concat(cars);
+    updateGarage();
+    // await fillGarage();
+    console.log(state.cars);
+};
+
+export const createCarParams = (): ICar => {
     const carName = document.querySelector('.create-car-name') as HTMLInputElement;
     const carColor = document.querySelector('.create-car-color') as HTMLInputElement;
 
-    carColor.value === '#ffffff' ? (carColor.value = generateColor()) : carColor.value;
-    carName.value === '' ? (carName.value = carBrands[8]) : carName.value;
-    // console.log('carName.value, carColor.value', carName.value, carColor.value);
-    console.log(state.cars[state.cars.length - 1].id);
-    const body: ICar = {
-        name: carName.value,
-        color: carColor.value,
-        id: state.cars[state.cars.length - 1].id + 1,
+    const car: ICar = {
+        name: carName.value === '' ? generateName() : carName.value,
+        color: carColor.value === '#ffffff' ? generateColor() : carColor.value,
+        id: state.cars.length ? state.cars[state.cars.length - 1].id + 1 : 0,
     };
-    await requestCreateCar(body);
+    return car;
+};
 
+export const createCar = async (amount = 1) => {
+    const car: ICar = createCarParams();
+    await requestCreateCar(car);
     updateGarage();
-    // await fillGarage();
-    carColor.value = '#ffffff';
-    carName.value = '';
-    // console.log(state, body);
+    cleanInputs('.create-car-color', '.create-car-name');
 };
 
 const requestCreateCar = async (body: ICar) => {
@@ -158,18 +176,6 @@ export const selectCar = async (e: Event, id: number) => {
     setSelectedCarParams(currentCarName.value, currentCarColor.value, id);
 };
 
-const setSelectedCarParams = (name: string, color: string, carId?: number) => {
-    state.selectedCar.name = name;
-    state.selectedCar.color = color;
-    carId ? (state.selectedCar.id = carId) : (state.selectedCar.id = -1);
-};
-
-export const cleanInputs = () => {
-    const currentCarColor = document.querySelector('.update-car-color') as HTMLInputElement;
-    const currentCarName = document.querySelector('.update-car-name') as HTMLInputElement;
-    currentCarColor.value = '#ffffff';
-    currentCarName.value = '';
-};
 export const updateCar = async () => {
     const currentCarColor = document.querySelector('.update-car-color') as HTMLInputElement;
     const currentCarName = document.querySelector('.update-car-name') as HTMLInputElement;
@@ -182,10 +188,8 @@ export const updateCar = async () => {
         state.cars[carIndex].name = state.selectedCar.name;
         state.cars[carIndex].color = state.selectedCar.color;
         updateGarage();
-        cleanInputs();
+        cleanInputs('.update-car-color', '.update-car-name');
     }
-
-    console.log(state);
 };
 
 const requestUpdateCar = async (id: number, body: ICar) => {

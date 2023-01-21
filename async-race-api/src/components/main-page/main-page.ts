@@ -1,4 +1,4 @@
-import { deleteCar, selectCar, setCarActivity } from '../api/api';
+import { deleteCar, selectCar, setCarActivity, setCarsAmount } from '../api/api';
 import { createButton, createElement, createInput, createSVG } from '../global-components/global-components';
 import { renderHeader } from './header/header';
 import './main-page.scss';
