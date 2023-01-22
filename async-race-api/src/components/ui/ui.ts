@@ -71,23 +71,27 @@ export const startRace = async (cars: ICar[]) => {
     const btnsB = document.querySelectorAll('.btn-b') as NodeListOf<HTMLButtonElement>;
     const btnReset = document.querySelector('.btn-reset') as HTMLButtonElement;
     const params = [...(await requestToStartRace(cars, 'started'))];
-    console.log(btnsA);
+
     cars.forEach(async (car, index) => {
         const animation = await animateCar(car.id, params[index].velocity);
         animation.play();
 
         btnsA.forEach((item) => (item.disabled = true));
-        btnsB.forEach((item) => (item.disabled = false));
+        // btnsB.forEach((item) => (item.disabled = false));
 
         // btnsB.forEach((item) =>
-        //     item.addEventListener('click', async () => {
-        //         await requestEngineParams(item.id, 'stopped');
+        //     item.addEventListener('click', async (e) => {
+        //         const btn = e.target as HTMLButtonElement;
+        //         console.log(btn.id.slice(1));
+        //         await requestEngineParams(+btn.id.slice(1), 'stopped');
+        //         animation.cancel();
         //     })
         // );
 
         btnReset.addEventListener('click', () => {
             cars.forEach(async (car) => await requestEngineParams(car.id, 'stopped'));
             animation.cancel();
+            btnsA.forEach((item) => (item.disabled = false));
         });
 
         try {
@@ -96,11 +100,6 @@ export const startRace = async (cars: ICar[]) => {
             animation.pause();
         }
     });
-};
-
-export const endRace = async (cars: ICar[]) => {
-    const btnsA = document.querySelectorAll(`.btn-a`);
-    const btnsB = document.querySelectorAll(`.btn-b`);
 };
 
 const animateCar = async (id: number, velocity: number) => {
