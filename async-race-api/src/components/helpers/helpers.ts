@@ -27,3 +27,8 @@ export const setSelectedCarParams = (name: string, color: string, carId?: number
     state.selectedCar.color = color;
     carId ? (state.selectedCar.id = carId) : (state.selectedCar.id = -1);
 };
+
+export const setCarsAmount = async () => {
+    const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
+    carsAmount.value = `${state.cars.length}`;
+};

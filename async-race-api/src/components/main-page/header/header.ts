@@ -1,14 +1,6 @@
 import './header.scss';
-import {
-    createButton,
-    createElement,
-    createForm,
-    createImage,
-    createInput,
-    createParagraph,
-} from '../../global-components/global-components';
-import { create100Cars, createCar, updateCar } from '../../ui/ui';
-import { getInputValue } from '../../helpers/helpers';
+import { createButton, createElement, createInput } from '../../global-components/global-components';
+import { create100Cars, createCar, endRace, startRace, state, updateCar } from '../../ui/ui';
 
 const createNavBlock = (): HTMLDivElement => {
     const navigation = createElement('div', 'nav') as HTMLDivElement;
@@ -48,11 +40,24 @@ const createRaceBlock = (): HTMLDivElement => {
     const raceBtnsBlock = createElement('div', 'race-btns-block') as HTMLDivElement;
     const btnRace = createButton('race', 'btn-race') as HTMLButtonElement;
     const btnReset = createButton('reset', 'btn-reset') as HTMLButtonElement;
+    btnReset.disabled = true;
     const btnGenerateCars = createButton('generate cars', 'btn-generate-cars') as HTMLButtonElement;
     raceBtnsBlock.append(btnRace, btnReset, btnGenerateCars);
 
     btnGenerateCars.addEventListener('click', async () => {
         await create100Cars();
+    });
+
+    btnRace.addEventListener('click', async () => {
+        await startRace(state.cars);
+        btnReset.disabled = false;
+        btnRace.disabled = true;
+    });
+
+    btnReset.addEventListener('click', async () => {
+        // await endRace(state.cars);
+        btnReset.disabled = true;
+        btnRace.disabled = false;
     });
 
     return raceBtnsBlock;

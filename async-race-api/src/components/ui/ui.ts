@@ -1,5 +1,5 @@
 import { ICar, INewCar, IState } from '../global-components/interfaces';
-import { cleanInputs, generateColor, generateName, setSelectedCarParams } from '../helpers/helpers';
+import { cleanInputs, generateColor, generateName, setCarsAmount, setSelectedCarParams } from '../helpers/helpers';
 import { renderCar, renderTitle } from '../main-page/main-page';
 import {
     requestGetCars,
@@ -9,11 +9,8 @@ import {
     requestDeleteCar,
     requestCreateCar,
     requestCreate100Cars,
+    requestToStartRace,
 } from '../api/api';
-
-// const base = 'http://127.0.0.1:3000';
-// const garage = `${base}/garage`;
-// const engine = `${base}/engine`;
 
 window.addEventListener('load', async () => await fillGarage());
 
@@ -25,15 +22,6 @@ export const state: IState = {
         id: -1,
     },
 };
-
-// export async function requestGetCars() {
-//     //page = 1, limit = 7
-//     return await fetch(`${garage}`) //...?_page=${page}&_limit=${limit}
-//         .then((res) => res.json())
-//         .then((car) => {
-//             return (state.cars = state.cars.concat(car));
-//         });
-// }
 
 export const fillGarage = async () => {
     await requestGetCars();
@@ -50,13 +38,9 @@ export const updateGarage = async () => {
     setCarsAmount();
 };
 
-export const setCarsAmount = async () => {
-    const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
-    carsAmount.value = `${state.cars.length}`;
-};
-
+//-------------------------DRIVE & STOP
 export const setCarActivity = async (e: Event, id: number) => {
-    console.log(e.target);
+    // console.log(e.target);
     const btnA = e.target as HTMLButtonElement;
     const btnB = document.querySelector(`#b${id}`) as HTMLButtonElement;
     let params;
@@ -65,35 +49,59 @@ export const setCarActivity = async (e: Event, id: number) => {
     if (btnA && btnA.className === 'btn-a') {
         params = await requestEngineParams(id, 'started');
         animation = await animateCar(id, params.velocity);
-        console.log(params);
+        animation.id = `animation${id}`;
+        // console.log(params);
         animation.play();
 
-        btnB.addEventListener('click', () => {
-            requestEngineParams(id, 'stopped');
+        btnB.addEventListener('click', async () => {
+            await requestEngineParams(id, 'stopped');
             animation.cancel();
         });
 
         try {
-            const successStatus = await requestToDrive(id);
-            console.log(successStatus);
+            await requestToDrive(id);
         } catch (error) {
             animation.pause();
         }
     }
 };
 
-// const requestEngineParams = async (id: number, status: string) => {
-//     // console.log('engine', engine);
-//     return await fetch(`${engine}?id=${id}&status=${status}`, {
-//         method: 'PATCH',
-//     }).then((res) => res.json());
-// };
+export const startRace = async (cars: ICar[]) => {
+    const btnsA = document.querySelectorAll('.btn-a') as NodeListOf<HTMLButtonElement>;
+    const btnsB = document.querySelectorAll('.btn-b') as NodeListOf<HTMLButtonElement>;
+    const btnReset = document.querySelector('.btn-reset') as HTMLButtonElement;
+    const params = [...(await requestToStartRace(cars, 'started'))];
+    console.log(btnsA);
+    cars.forEach(async (car, index) => {
+        const animation = await animateCar(car.id, params[index].velocity);
+        animation.play();
 
-// const requestToDrive = async (id: number) => {
-//     return await fetch(`${engine}?id=${id}&status=drive`, {
-//         method: 'PATCH',
-//     }).then((res) => res.json());
-// };
+        btnsA.forEach((item) => (item.disabled = true));
+        btnsB.forEach((item) => (item.disabled = false));
+
+        // btnsB.forEach((item) =>
+        //     item.addEventListener('click', async () => {
+        //         await requestEngineParams(item.id, 'stopped');
+        //     })
+        // );
+
+        btnReset.addEventListener('click', () => {
+            cars.forEach(async (car) => await requestEngineParams(car.id, 'stopped'));
+            animation.cancel();
+        });
+
+        try {
+            await requestToDrive(car.id);
+        } catch (error) {
+            animation.pause();
+        }
+    });
+};
+
+export const endRace = async (cars: ICar[]) => {
+    const btnsA = document.querySelectorAll(`.btn-a`);
+    const btnsB = document.querySelectorAll(`.btn-b`);
+};
 
 const animateCar = async (id: number, velocity: number) => {
     const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
@@ -112,13 +120,7 @@ const animateCar = async (id: number, velocity: number) => {
     return carAnimation;
 };
 
-export const create100Cars = async () => {
-    const allCars = await requestCreate100Cars();
-
-    state.cars = [...state.cars, ...allCars];
-    await updateGarage();
-};
-
+//-------------------------CREATE
 export const createCarParams = (): INewCar => {
     //
     const carName = document.querySelector('.create-car-name') as HTMLInputElement;
@@ -140,32 +142,19 @@ export const createCar = async (amount = 1) => {
     cleanInputs('.create-car-color', '.create-car-name');
 };
 
-// const requestCreateCar = async (body: INewCar) => { //
-//     return await fetch(`${garage}`, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(body),
-//     })
-//         .then((res) => res.json())
-//         .then((car) => (state.cars = state.cars.concat(car)))
-//         .then(() => console.log('after craete', state.cars));
-// };
+export const create100Cars = async () => {
+    const allCars = await requestCreate100Cars();
 
-// const requestDeleteCar = async (id: number) => {
-//     return await fetch(`${garage}/${id}`, {
-//         method: 'DELETE',
-//     })
-//         .then((res) => res.json())
-//         .then(() => (state.cars = state.cars.filter((car) => car.id !== id)));
-// };
+    state.cars = [...state.cars, ...allCars];
+    await updateGarage();
+};
 
+//-------------------------DELETE
 export const deleteCar = async (e: Event, id: number) => {
     const btnRemove = e.target as HTMLButtonElement;
     if (btnRemove && btnRemove.id == `remove${id}`) {
         await requestDeleteCar(id);
-        // state.cars = state.cars.filter((item) => item.id !== id);
         updateGarage();
-        console.log('delete', state.cars);
     }
 };
 
@@ -198,13 +187,3 @@ export const updateCar = async () => {
         cleanInputs('.update-car-color', '.update-car-name');
     }
 };
-
-// const requestUpdateCar = async (id: number, body: ICar) => {
-//     return await fetch(`${garage}/${id}`, {
-//         method: 'PUT',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(body),
-//     }).then((res) => res.json());
-// };
