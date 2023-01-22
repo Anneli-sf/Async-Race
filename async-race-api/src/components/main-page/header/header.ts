@@ -7,7 +7,7 @@ import {
     createInput,
     createParagraph,
 } from '../../global-components/global-components';
-import { create100Cars, createCar, fillGarage, setCarsAmount, updateCar } from '../../api/api';
+import { create100Cars, createCar, updateCar } from '../../ui/ui';
 import { getInputValue } from '../../helpers/helpers';
 
 const createNavBlock = (): HTMLDivElement => {

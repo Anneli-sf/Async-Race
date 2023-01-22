@@ -1,14 +1,14 @@
-import { state } from '../api/api';
+import { state } from '../ui/ui';
 import { carBrands, carModels } from '../data/data';
 export const generateColor = (): string => {
-    return '#' + (Math.random().toString(16) + '100000').substring(2, 8).toUpperCase();
+    return '#' + (Math.random().toString(16) + '000000').substring(2, 8).toUpperCase();
 };
 
 export const generateName = (): string => {
     const brand: string = carBrands[Math.floor(Math.random() * carBrands.length)];
     const model: string = carModels[Math.floor(Math.random() * carModels.length)];
     return `${brand} ${model}`;
-}
+};
 
 export const getInputValue = (e: Event): string => {
     const input = e.target as HTMLInputElement;
