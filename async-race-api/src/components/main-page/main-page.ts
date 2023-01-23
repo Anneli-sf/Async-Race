@@ -1,4 +1,4 @@
-import { deleteCar, selectCar, setCarActivity, state } from '../ui/ui';
+import { deleteCar, selectCar, setCarActivity, showNextPage, showPrevPage, state } from '../ui/ui';
 import { createButton, createElement, createInput, createSVG } from '../global-components/global-components';
 import { renderHeader } from './header/header';
 import './main-page.scss';
@@ -20,6 +20,14 @@ export const renderTitle = (): HTMLDivElement => {
 
     const btnPrev = createButton('', 'btn-prev');
     const btnNext = createButton('', 'btn-next');
+
+    btnPrev.addEventListener('click', () => {
+        showPrevPage();
+    });
+
+    btnNext.addEventListener('click', () => {
+        showNextPage();
+    });
 
     titleBlock.append(title, carsAmount);
     pageBlock.append(page, btnPrev, pageNumber, btnNext);

@@ -129,15 +129,12 @@ const animateCar = async (id: number, velocity: number) => {
 
 //-------------------------CREATE
 export const createCarParams = (): INewCar => {
-    //
     const carName = document.querySelector('.create-car-name') as HTMLInputElement;
     const carColor = document.querySelector('.create-car-color') as HTMLInputElement;
 
     const car: INewCar = {
-        //
         name: carName.value === '' ? generateName() : carName.value,
         color: carColor.value === '#ffffff' ? generateColor() : carColor.value,
-        // id: state.cars.length ? state.cars[state.cars.length - 1].id + 1 : 0,
     };
     return car;
 };
@@ -151,11 +148,10 @@ export const createCar = async () => {
 
 export const create100Cars = async () => {
     const allCars = await requestCreate100Cars();
-
-    // state.cars = [...state.cars, ...allCars];
-    const flatCarsArray = [...state.cars.flat(), ...allCars];
+    let flatCarsArray = state.cars.flat();
+    flatCarsArray = [...flatCarsArray, ...allCars];
     state.cars = sliceIntoChunks(flatCarsArray, 7);
-
+    // console.log(state.cars);
     await updateGarage(state.page);
 };
 
@@ -198,4 +194,22 @@ export const updateCar = async () => {
         updateGarage(state.page);
         cleanInputs('.update-car-color', '.update-car-name');
     }
+};
+
+export const showPrevPage = () => {
+    const pageNumber = document.querySelector('.page-number') as HTMLSpanElement;
+    if (state.page > 0) {
+        state.page -= 1;
+    }
+    pageNumber.innerHTML = `${state.page + 1}`;
+    updateGarage(state.page);
+};
+
+export const showNextPage = () => {
+    const pageNumber = document.querySelector('.page-number') as HTMLSpanElement;
+    if (state.page < state.cars.length - 1) {
+        state.page += 1;
+    }
+    pageNumber.innerHTML = `${state.page + 1}`;
+    updateGarage(state.page);
 };

@@ -7,12 +7,13 @@ const garage = `${base}/garage`;
 const engine = `${base}/engine`;
 
 export async function requestGetCars(page: number) {
-    //page = 1, limit = 7
-    return await fetch(`${garage}?_page=${page}`) //...?_page=${page}&_limit=${limit}
+    console.log(page);
+    return await fetch(`${garage}`) //...?_page=${page}&_limit=${limit}
         .then((res) => res.json())
         .then((car) => {
-            const arr: ICar[] = state.cars.flat().concat(car);
-            return (state.cars = sliceIntoChunks(arr, 7));
+            const flatCarsArray: ICar[] = state.cars.flat().concat(car);
+            console.log(sliceIntoChunks(flatCarsArray, 7));
+            return (state.cars = sliceIntoChunks(flatCarsArray, 7));
         });
 }
 
@@ -44,7 +45,7 @@ export const requestToStartRace = async (cars: ICar[], status: string) => {
 export const requestCreate100Cars = async () => {
     const cars: INewCar[] = [];
     let i = 0;
-    while (i < 5) {
+    while (i < 100) {
         cars.push({ name: generateName(), color: generateColor() });
         i++;
     }
