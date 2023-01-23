@@ -1,5 +1,6 @@
 import { state } from '../ui/ui';
 import { carBrands, carModels } from '../data/data';
+import { ICar } from '../global-components/interfaces';
 export const generateColor = (): string => {
     return '#' + (Math.random().toString(16) + '000000').substring(2, 8).toUpperCase();
 };
@@ -30,5 +31,14 @@ export const setSelectedCarParams = (name: string, color: string, carId?: number
 
 export const setCarsAmount = async () => {
     const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
-    carsAmount.value = `${state.cars.length}`;
+    carsAmount.value = `${state.cars.flat().length}`;//
+};
+
+export const sliceIntoChunks = (arr: ICar[], chunkSize: number): ICar[][] => {
+    const res = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+        const chunk = arr.slice(i, i + chunkSize);
+        res.push(chunk);
+    }
+    return res;
 };

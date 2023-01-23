@@ -10,6 +10,7 @@ export interface INewCar {
 }
 
 export interface IState {
-    cars: ICar[];
+    cars: Array<ICar[]>;
     selectedCar: ICar;
+    page: number;
 }

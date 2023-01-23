@@ -1,4 +1,4 @@
-import { deleteCar, selectCar, setCarActivity } from '../ui/ui';
+import { deleteCar, selectCar, setCarActivity, state } from '../ui/ui';
 import { createButton, createElement, createInput, createSVG } from '../global-components/global-components';
 import { renderHeader } from './header/header';
 import './main-page.scss';
@@ -14,7 +14,14 @@ export const renderTitle = (): HTMLDivElement => {
     carsAmount.disabled = true;
     const page = createElement('span', 'page') as HTMLSpanElement;
     page.innerText = `Page`;
-    const pageNumber = createInput('page-number', 'number', 'page-number', '', '1', true) as HTMLInputElement;
+    const pageNumber = createInput(
+        'page-number',
+        'number',
+        'page-number',
+        '',
+        `${state.page + 1}`,
+        true
+    ) as HTMLInputElement;
     pageNumber.disabled = true;
 
     titleBlock.append(title, carsAmount);

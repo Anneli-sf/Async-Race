@@ -1,17 +1,18 @@
 import { ICar, INewCar, IState } from '../global-components/interfaces';
-import { cleanInputs, generateColor, generateName } from '../helpers/helpers';
+import { cleanInputs, generateColor, generateName, sliceIntoChunks } from '../helpers/helpers';
 import { state } from '../ui/ui';
 
 const base = 'http://127.0.0.1:3000';
 const garage = `${base}/garage`;
 const engine = `${base}/engine`;
 
-export async function requestGetCars() {
+export async function requestGetCars(page: number) {
     //page = 1, limit = 7
-    return await fetch(`${garage}`) //...?_page=${page}&_limit=${limit}
+    return await fetch(`${garage}?_page=${page}`) //...?_page=${page}&_limit=${limit}
         .then((res) => res.json())
         .then((car) => {
-            return (state.cars = state.cars.concat(car));
+            const arr: ICar[] = state.cars.flat().concat(car);
+            return (state.cars = sliceIntoChunks(arr, 7));
         });
 }
 
@@ -29,8 +30,10 @@ export const requestToDrive = async (id: number) => {
 };
 
 export const requestToStartRace = async (cars: ICar[], status: string) => {
+    //
     return await Promise.all(
-        cars.map(async (car) => {
+        cars.flat().map(async (car) => {
+            //
             return await fetch(`${engine}?id=${car.id}&status=${status}`, {
                 method: 'PATCH',
             }).then((res) => res.json());
@@ -65,8 +68,11 @@ export const requestCreateCar = async (body: INewCar) => {
         body: JSON.stringify(body),
     })
         .then((res) => res.json())
-        .then((car) => (state.cars = state.cars.concat(car)))
-        .then(() => console.log('after craete', state.cars));
+        .then((car) => {
+            const arr: ICar[] = state.cars.flat().concat(car);
+            return (state.cars = sliceIntoChunks(arr, 7));
+        });
+    //(state.cars = state.cars.concat(car)));
 };
 
 export const requestDeleteCar = async (id: number) => {
@@ -74,7 +80,13 @@ export const requestDeleteCar = async (id: number) => {
         method: 'DELETE',
     })
         .then((res) => res.json())
-        .then(() => (state.cars = state.cars.filter((car) => car.id !== id)));
+        .then(() => {
+            let flatCarsArray: ICar[] = state.cars.flat();
+            console.log('del arr', flatCarsArray);
+            flatCarsArray = flatCarsArray.filter((car) => car.id !== id);
+            return (state.cars = sliceIntoChunks(flatCarsArray, 7));
+        });
+    // (state.cars = state.cars.filter((car) => car.id !== id)));
 };
 
 export const requestUpdateCar = async (id: number, body: ICar) => {

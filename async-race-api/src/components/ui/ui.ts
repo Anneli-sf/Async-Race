@@ -1,5 +1,12 @@
 import { ICar, INewCar, IState } from '../global-components/interfaces';
-import { cleanInputs, generateColor, generateName, setCarsAmount, setSelectedCarParams } from '../helpers/helpers';
+import {
+    cleanInputs,
+    generateColor,
+    generateName,
+    setCarsAmount,
+    setSelectedCarParams,
+    sliceIntoChunks,
+} from '../helpers/helpers';
 import { renderCar, renderTitle } from '../main-page/main-page';
 import {
     requestGetCars,
@@ -21,19 +28,20 @@ export const state: IState = {
         color: '',
         id: -1,
     },
+    page: 0,
 };
 
 export const fillGarage = async () => {
-    await requestGetCars();
-    await updateGarage();
+    await requestGetCars(state.page + 1);
+    await updateGarage(state.page);
 };
 
-export const updateGarage = async () => {
+export const updateGarage = async (page: number) => {
     const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
     raceBlock.innerHTML = ``;
     raceBlock.append(renderTitle());
-    console.log('state.cars in update', state.cars);
-    state.cars.forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id)));
+     console.log('state.cars in update', state.cars);
+    state.cars[page].forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id))); //
 
     setCarsAmount();
 };
@@ -49,7 +57,7 @@ export const setCarActivity = async (e: Event, id: number) => {
     if (btnA && btnA.className === 'btn-a') {
         params = await requestEngineParams(id, 'started');
         animation = await animateCar(id, params.velocity);
-        animation.id = `animation${id}`;
+        // animation.id = `animation${id}`;
         // console.log(params);
         animation.play();
 
@@ -66,13 +74,13 @@ export const setCarActivity = async (e: Event, id: number) => {
     }
 };
 
-export const startRace = async (cars: ICar[]) => {
+export const startRace = async (cars: ICar[][], page: number) => {
     const btnsA = document.querySelectorAll('.btn-a') as NodeListOf<HTMLButtonElement>;
     const btnsB = document.querySelectorAll('.btn-b') as NodeListOf<HTMLButtonElement>;
     const btnReset = document.querySelector('.btn-reset') as HTMLButtonElement;
-    const params = [...(await requestToStartRace(cars, 'started'))];
+    const params = [...(await requestToStartRace(cars[page], 'started'))];
 
-    cars.forEach(async (car, index) => {
+    cars[page].forEach(async (car, index) => {
         const animation = await animateCar(car.id, params[index].velocity);
         animation.play();
 
@@ -89,7 +97,7 @@ export const startRace = async (cars: ICar[]) => {
         // );
 
         btnReset.addEventListener('click', () => {
-            cars.forEach(async (car) => await requestEngineParams(car.id, 'stopped'));
+            cars[page].forEach(async (car) => await requestEngineParams(car.id, 'stopped'));
             animation.cancel();
             btnsA.forEach((item) => (item.disabled = false));
         });
@@ -134,18 +142,21 @@ export const createCarParams = (): INewCar => {
     return car;
 };
 
-export const createCar = async (amount = 1) => {
+export const createCar = async () => {
     const car: INewCar = createCarParams(); //
     await requestCreateCar(car);
-    await updateGarage();
+    await updateGarage(state.page);
     cleanInputs('.create-car-color', '.create-car-name');
 };
 
 export const create100Cars = async () => {
     const allCars = await requestCreate100Cars();
 
-    state.cars = [...state.cars, ...allCars];
-    await updateGarage();
+    // state.cars = [...state.cars, ...allCars];
+    const flatCarsArray = [...state.cars.flat(), ...allCars];
+    state.cars = sliceIntoChunks(flatCarsArray, 7);
+
+    await updateGarage(state.page);
 };
 
 //-------------------------DELETE
@@ -153,7 +164,7 @@ export const deleteCar = async (e: Event, id: number) => {
     const btnRemove = e.target as HTMLButtonElement;
     if (btnRemove && btnRemove.id == `remove${id}`) {
         await requestDeleteCar(id);
-        updateGarage();
+        updateGarage(state.page);
     }
 };
 
@@ -162,10 +173,11 @@ export const selectCar = async (e: Event, id: number) => {
     const btnSelect = e.target as HTMLButtonElement;
     const currentCarColor = document.querySelector('.update-car-color') as HTMLInputElement;
     const currentCarName = document.querySelector('.update-car-name') as HTMLInputElement;
+    const flatCarsArray = state.cars.flat(); //
     if (btnSelect && btnSelect.id == `select${id}`) {
-        const carIndex: number = state.cars.findIndex((item) => item.id == id);
-        currentCarColor.value = state.cars[carIndex].color;
-        currentCarName.value = state.cars[carIndex].name;
+        const carIndex: number = flatCarsArray.findIndex((item) => item.id == id);
+        currentCarColor.value = flatCarsArray[carIndex].color;
+        currentCarName.value = flatCarsArray[carIndex].name;
     }
 
     setSelectedCarParams(currentCarName.value, currentCarColor.value, id);
@@ -175,14 +187,15 @@ export const updateCar = async () => {
     const currentCarColor = document.querySelector('.update-car-color') as HTMLInputElement;
     const currentCarName = document.querySelector('.update-car-name') as HTMLInputElement;
 
+    const flatCarsArray = state.cars.flat();
     if (currentCarName.value !== '') {
         setSelectedCarParams(currentCarName.value, currentCarColor.value, state.selectedCar.id);
         await requestUpdateCar(state.selectedCar.id, state.selectedCar);
 
-        const carIndex: number = state.cars.findIndex((item) => item.id == state.selectedCar.id);
-        state.cars[carIndex].name = state.selectedCar.name;
-        state.cars[carIndex].color = state.selectedCar.color;
-        updateGarage();
+        const carIndex: number = flatCarsArray.findIndex((item) => item.id == state.selectedCar.id);
+        flatCarsArray[carIndex].name = state.selectedCar.name;
+        flatCarsArray[carIndex].color = state.selectedCar.color;
+        updateGarage(state.page);
         cleanInputs('.update-car-color', '.update-car-name');
     }
 };

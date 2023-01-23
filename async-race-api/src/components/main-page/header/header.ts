@@ -1,6 +1,6 @@
 import './header.scss';
 import { createButton, createElement, createInput } from '../../global-components/global-components';
-import { create100Cars, createCar, endRace, startRace, state, updateCar } from '../../ui/ui';
+import { create100Cars, createCar, startRace, state, updateCar } from '../../ui/ui';
 
 const createNavBlock = (): HTMLDivElement => {
     const navigation = createElement('div', 'nav') as HTMLDivElement;
@@ -49,7 +49,7 @@ const createRaceBlock = (): HTMLDivElement => {
     });
 
     btnRace.addEventListener('click', async () => {
-        await startRace(state.cars);
+        await startRace(state.cars, state.page);
         btnReset.disabled = false;
         btnRace.disabled = true;
     });
