@@ -34,8 +34,26 @@
             width: 20px;
             text-align: center;
         }
+
+        .btn-prev, 
+        .btn-next {
+            background-image: url('../../public/icons/arrow.png');
+            width: 17px;
+            height: 17px;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border: none;
+            &:hover {
+                filter: invert(80%);
+            }
+        }
+
+        .btn-next {
+            transform: rotateY(180deg);
+        }
     }
-    
 }
 
 .car-block {
