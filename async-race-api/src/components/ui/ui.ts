@@ -1,4 +1,4 @@
-import { ICar, INewCar, IState } from '../global-components/interfaces';
+import { ICar, INewCar, IState, IWinner } from '../global-components/interfaces';
 import {
     cleanInputs,
     generateColor,
@@ -29,6 +29,7 @@ export const state: IState = {
         id: -1,
     },
     page: 0,
+    winners: [],
 };
 
 export const fillGarage = async () => {
@@ -73,7 +74,16 @@ export const setCarActivity = async (e: Event, id: number) => {
         }
     }
 };
-
+// const allResults: IWinner[] = [];
+export const findBestTime = (animation: Animation, carName: string) => {
+    //allResults: IWinner[]
+    const allResults: IWinner[] = [];
+    if (animation.startTime && animation.currentTime && animation.effect) {
+        const raceTime = animation.effect.getTiming().duration as number;
+        allResults.push({ name: carName, result: raceTime / 1000 });
+        console.log('allResults,', allResults);
+    }
+};
 export const startRace = async (cars: ICar[][], page: number) => {
     const btnsA = document.querySelectorAll('.btn-a') as NodeListOf<HTMLButtonElement>;
     const btnsB = document.querySelectorAll('.btn-b') as NodeListOf<HTMLButtonElement>;
@@ -83,6 +93,14 @@ export const startRace = async (cars: ICar[][], page: number) => {
     cars[page].forEach(async (car, index) => {
         const animation = await animateCar(car.id, params[index].velocity);
         animation.play();
+
+        animation.addEventListener(
+            'finish',
+            () => {
+                findBestTime(animation, car.name);
+            },
+            { once: true }
+        );
 
         btnsA.forEach((item) => (item.disabled = true));
         // btnsB.forEach((item) => (item.disabled = false));
@@ -115,15 +133,16 @@ const animateCar = async (id: number, velocity: number) => {
     const parentEl = car.parentElement as HTMLDivElement;
     const pathWidth: number = parentEl.offsetWidth;
     // console.log(distance);
-    const time = pathWidth / velocity;
+    const time = (pathWidth / velocity) * 1000;
     // console.log(time);
 
     const carKeyframes = new KeyframeEffect(
         car,
         [{ transform: 'translateY(0%)' }, { transform: `translate(${pathWidth + 60}px)` }],
-        { duration: time * 1000, fill: 'forwards' }
+        { duration: time, fill: 'forwards' }
     );
     const carAnimation = new Animation(carKeyframes, document.timeline);
+    console.log((time * 1000) / 1000);
     return carAnimation;
 };
 
@@ -140,7 +159,7 @@ export const createCarParams = (): INewCar => {
 };
 
 export const createCar = async () => {
-    const car: INewCar = createCarParams(); //
+    const car: INewCar = createCarParams();
     await requestCreateCar(car);
     await updateGarage(state.page);
     cleanInputs('.create-car-color', '.create-car-name');
@@ -169,7 +188,7 @@ export const selectCar = async (e: Event, id: number) => {
     const btnSelect = e.target as HTMLButtonElement;
     const currentCarColor = document.querySelector('.update-car-color') as HTMLInputElement;
     const currentCarName = document.querySelector('.update-car-name') as HTMLInputElement;
-    const flatCarsArray = state.cars.flat(); //
+    const flatCarsArray = state.cars.flat();
     if (btnSelect && btnSelect.id == `select${id}`) {
         const carIndex: number = flatCarsArray.findIndex((item) => item.id == id);
         currentCarColor.value = flatCarsArray[carIndex].color;

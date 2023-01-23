@@ -7,7 +7,7 @@ const garage = `${base}/garage`;
 const engine = `${base}/engine`;
 
 export async function requestGetCars(page: number) {
-    console.log(page);
+    // console.log(page);
     return await fetch(`${garage}`) //...?_page=${page}&_limit=${limit}
         .then((res) => res.json())
         .then((car) => {
