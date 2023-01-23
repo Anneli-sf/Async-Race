@@ -40,7 +40,7 @@ export const updateGarage = async (page: number) => {
     const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
     raceBlock.innerHTML = ``;
     raceBlock.append(renderTitle());
-     console.log('state.cars in update', state.cars);
+
     state.cars[page].forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id))); //
 
     setCarsAmount();

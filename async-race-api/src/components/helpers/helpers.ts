@@ -31,7 +31,7 @@ export const setSelectedCarParams = (name: string, color: string, carId?: number
 
 export const setCarsAmount = async () => {
     const carsAmount = document.querySelector('.cars-amount') as HTMLInputElement;
-    carsAmount.value = `${state.cars.flat().length}`;//
+    carsAmount.value = `${state.cars.flat().length}`;
 };
 
 export const sliceIntoChunks = (arr: ICar[], chunkSize: number): ICar[][] => {

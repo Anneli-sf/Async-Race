@@ -14,18 +14,15 @@ export const renderTitle = (): HTMLDivElement => {
     carsAmount.disabled = true;
     const page = createElement('span', 'page') as HTMLSpanElement;
     page.innerText = `Page`;
-    const pageNumber = createInput(
-        'page-number',
-        'number',
-        'page-number',
-        '',
-        `${state.page + 1}`,
-        true
-    ) as HTMLInputElement;
-    pageNumber.disabled = true;
+
+    const pageNumber = createElement('span', 'page-number') as HTMLSpanElement;
+    pageNumber.innerHTML = `${state.page + 1}`;
+
+    const btnPrev = createButton('', 'btn-prev');
+    const btnNext = createButton('', 'btn-next');
 
     titleBlock.append(title, carsAmount);
-    pageBlock.append(page, pageNumber);
+    pageBlock.append(page, btnPrev, pageNumber, btnNext);
 
     raceHeader.append(titleBlock, pageBlock);
     return raceHeader;

@@ -24,6 +24,18 @@
         color: black;
         font-size: 19px;
     }
+
+    .page-block {
+        gap: 5px;
+        .page {
+            margin-right: 10px;
+        }
+        .page-number {
+            width: 20px;
+            text-align: center;
+        }
+    }
+    
 }
 
 .car-block {
