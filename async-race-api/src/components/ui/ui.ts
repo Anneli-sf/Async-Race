@@ -46,8 +46,11 @@ export const updateGarage = async (page: number) => {
     raceBlock.innerHTML = ``;
     raceBlock.append(renderTitle(page));
 
-    if (state.cars.length > 0)
+    if (state.cars.length > 0) {
+        state.cars[page] && state.cars[page].length > 0 ? (page = page) : (page--, showPrevPage());
+
         state.cars[page].forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id)));
+    }
 
     setCarsAmount();
 };
@@ -176,6 +179,7 @@ export const create100Cars = async () => {
 export const deleteCar = async (e: Event, id: number) => {
     const btnRemove = e.target as HTMLButtonElement;
     isLocalStorage();
+
     if (btnRemove && btnRemove.id == `remove${id}`) {
         await requestDeleteCar(id);
         updateGarage(state.page);
