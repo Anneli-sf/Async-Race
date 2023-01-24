@@ -7,7 +7,7 @@ import {
     setSelectedCarParams,
     sliceIntoChunks,
 } from '../helpers/helpers';
-import { renderCar, renderTitle } from '../main-page/main-page';
+import { renderCar, renderTitle, renderWinMessage } from '../main-page/main-page';
 import {
     requestGetCars,
     requestEngineParams,
@@ -33,7 +33,7 @@ export const state: IState = {
 };
 
 export const fillGarage = async () => {
-    await requestGetCars(state.page + 1);
+    await requestGetCars();
     await updateGarage(state.page);
 };
 
@@ -58,8 +58,6 @@ export const setCarActivity = async (e: Event, id: number) => {
     if (btnA && btnA.className === 'btn-a') {
         params = await requestEngineParams(id, 'started');
         animation = await animateCar(id, params.velocity);
-        // animation.id = `animation${id}`;
-        // console.log(params);
         animation.play();
 
         btnB.addEventListener('click', async () => {
@@ -74,19 +72,31 @@ export const setCarActivity = async (e: Event, id: number) => {
         }
     }
 };
-// const allResults: IWinner[] = [];
-export const findBestTime = (animation: Animation, carName: string) => {
-    //allResults: IWinner[]
-    const allResults: IWinner[] = [];
+const allResults: IWinner[] = [];
+export const findBestTime = (animation: Animation, carName: string, allResults: IWinner[]) => {
+    // const allResults: IWinner[] = [];
     if (animation.startTime && animation.currentTime && animation.effect) {
         const raceTime = animation.effect.getTiming().duration as number;
-        allResults.push({ name: carName, result: raceTime / 1000 });
-        console.log('allResults,', allResults);
+        allResults.push({ name: carName, result: +(raceTime / 1000).toFixed(2) });
     }
+    if (allResults.length == 1) {
+        // renderWinMessage(allResults[0].name, allResults[0].result);
+        showWinMessage();
+    }
+};
+
+export const showWinMessage = () => {
+    const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
+    raceBlock.append(renderWinMessage(allResults[0].name, allResults[0].result));
+};
+
+export const finishRace = () => {
+    const winBlockWrapper = document.querySelector('.win-wrapper') as HTMLDivElement;
+    winBlockWrapper.classList.remove('show');
+    allResults.length = 0;
 };
 export const startRace = async (cars: ICar[][], page: number) => {
     const btnsA = document.querySelectorAll('.btn-a') as NodeListOf<HTMLButtonElement>;
-    const btnsB = document.querySelectorAll('.btn-b') as NodeListOf<HTMLButtonElement>;
     const btnReset = document.querySelector('.btn-reset') as HTMLButtonElement;
     const params = [...(await requestToStartRace(cars[page], 'started'))];
 
@@ -94,30 +104,17 @@ export const startRace = async (cars: ICar[][], page: number) => {
         const animation = await animateCar(car.id, params[index].velocity);
         animation.play();
 
-        animation.addEventListener(
-            'finish',
-            () => {
-                findBestTime(animation, car.name);
-            },
-            { once: true }
-        );
+        animation.addEventListener('finish', () => {
+            findBestTime(animation, car.name, allResults);
+        });
 
         btnsA.forEach((item) => (item.disabled = true));
-        // btnsB.forEach((item) => (item.disabled = false));
-
-        // btnsB.forEach((item) =>
-        //     item.addEventListener('click', async (e) => {
-        //         const btn = e.target as HTMLButtonElement;
-        //         console.log(btn.id.slice(1));
-        //         await requestEngineParams(+btn.id.slice(1), 'stopped');
-        //         animation.cancel();
-        //     })
-        // );
 
         btnReset.addEventListener('click', () => {
             cars[page].forEach(async (car) => await requestEngineParams(car.id, 'stopped'));
             animation.cancel();
             btnsA.forEach((item) => (item.disabled = false));
+            finishRace();
         });
 
         try {
@@ -132,9 +129,7 @@ const animateCar = async (id: number, velocity: number) => {
     const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
     const parentEl = car.parentElement as HTMLDivElement;
     const pathWidth: number = parentEl.offsetWidth;
-    // console.log(distance);
     const time = (pathWidth / velocity) * 1000;
-    // console.log(time);
 
     const carKeyframes = new KeyframeEffect(
         car,
@@ -142,7 +137,6 @@ const animateCar = async (id: number, velocity: number) => {
         { duration: time, fill: 'forwards' }
     );
     const carAnimation = new Animation(carKeyframes, document.timeline);
-    console.log((time * 1000) / 1000);
     return carAnimation;
 };
 

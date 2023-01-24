@@ -55,7 +55,6 @@ const createRaceBlock = (): HTMLDivElement => {
     });
 
     btnReset.addEventListener('click', async () => {
-        // await endRace(state.cars);
         btnReset.disabled = true;
         btnRace.disabled = false;
     });

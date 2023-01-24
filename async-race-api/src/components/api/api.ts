@@ -6,19 +6,17 @@ const base = 'http://127.0.0.1:3000';
 const garage = `${base}/garage`;
 const engine = `${base}/engine`;
 
-export async function requestGetCars(page: number) {
+export async function requestGetCars() {
     // console.log(page);
-    return await fetch(`${garage}`) //...?_page=${page}&_limit=${limit}
+    return await fetch(`${garage}`)
         .then((res) => res.json())
         .then((car) => {
             const flatCarsArray: ICar[] = state.cars.flat().concat(car);
-            console.log(sliceIntoChunks(flatCarsArray, 7));
             return (state.cars = sliceIntoChunks(flatCarsArray, 7));
         });
 }
 
 export const requestEngineParams = async (id: number, status: string) => {
-    // console.log('engine', engine);
     return await fetch(`${engine}?id=${id}&status=${status}`, {
         method: 'PATCH',
     }).then((res) => res.json());
@@ -73,7 +71,6 @@ export const requestCreateCar = async (body: INewCar) => {
             const arr: ICar[] = state.cars.flat().concat(car);
             return (state.cars = sliceIntoChunks(arr, 7));
         });
-    //(state.cars = state.cars.concat(car)));
 };
 
 export const requestDeleteCar = async (id: number) => {
@@ -87,7 +84,6 @@ export const requestDeleteCar = async (id: number) => {
             flatCarsArray = flatCarsArray.filter((car) => car.id !== id);
             return (state.cars = sliceIntoChunks(flatCarsArray, 7));
         });
-    // (state.cars = state.cars.filter((car) => car.id !== id)));
 };
 
 export const requestUpdateCar = async (id: number, body: ICar) => {

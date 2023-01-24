@@ -1,5 +1,11 @@
 import { deleteCar, selectCar, setCarActivity, showNextPage, showPrevPage, state } from '../ui/ui';
-import { createButton, createElement, createInput, createSVG } from '../global-components/global-components';
+import {
+    createButton,
+    createElement,
+    createInput,
+    createParagraph,
+    createSVG,
+} from '../global-components/global-components';
 import { renderHeader } from './header/header';
 import './main-page.scss';
 
@@ -97,4 +103,17 @@ export const renderMainPage = (): HTMLElement => {
     const main = createElement('main', 'main') as HTMLElement;
     main.append(renderHeader(), renderRaceBlock());
     return main;
+};
+
+export const renderWinMessage = (carName: string, resTime: number) => {
+    const winBlockWrapper = createElement('div', 'win-wrapper') as HTMLDivElement;
+    const winMessage = createElement('div', 'win-message') as HTMLDivElement;
+    const messageWithName = createParagraph(`${carName} is the winner!`, 'winner-name-message') as HTMLParagraphElement;
+    const messageWitResult = createParagraph(`Result: ${resTime}s.`, 'winner-result-message') as HTMLParagraphElement;
+
+    winMessage.append(messageWithName, messageWitResult);
+    winBlockWrapper.append(winMessage);
+
+    winBlockWrapper.classList.add('show');
+    return winBlockWrapper;
 };

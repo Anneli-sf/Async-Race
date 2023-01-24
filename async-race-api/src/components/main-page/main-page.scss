@@ -3,6 +3,12 @@
 .main {
     width: 100%;
     padding: 15px;
+
+    .race-block {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
 }
 
 .race-header {
@@ -35,7 +41,7 @@
             text-align: center;
         }
 
-        .btn-prev, 
+        .btn-prev,
         .btn-next {
             background-image: url('../../public/icons/arrow.png');
             width: 17px;
@@ -111,6 +117,41 @@
             background-size: contain;
             background-position: bottom;
             z-index: 1;
+        }
+    }
+}
+
+.win-wrapper {
+    // padding: 15px;
+    // background-color: dimgray;
+    // opacity: 0.8;
+    display: none;
+    position: absolute;
+    top: 20vh;
+    left: 30vw;
+    box-shadow: 3px 3px 9px 7px rgb(101 63 7 / 43%);
+    border-radius: 27px;
+
+    &.show {
+        @include flex-row();
+    }
+
+    .win-message {
+        @include flex-column(center, center);
+        padding: 20px;
+        margin: 0 auto;
+        gap: 10px;
+        background-color: #cbbbbb;
+        box-shadow: 3px 0px 11px 8px rgb(101 63 7 / 56%) inset;
+        border: 0px solid;
+        border-radius: 27px;
+
+        .winner-name-message,
+        .winner-result-message {
+            font-size: 1.5em;
+            font-weight: 600;
+            padding: 0px;
+            margin: 0px;
         }
     }
 }
