@@ -3,6 +3,7 @@ import {
     cleanInputs,
     generateColor,
     generateName,
+    isLocalStorage,
     setCarsAmount,
     setSelectedCarParams,
     sliceIntoChunks,
@@ -19,8 +20,6 @@ import {
     requestToStartRace,
 } from '../api/api';
 
-window.addEventListener('load', async () => await fillGarage());
-
 export const state: IState = {
     cars: [],
     selectedCar: {
@@ -32,7 +31,15 @@ export const state: IState = {
     winners: [],
 };
 
-export const fillGarage = async () => {
+const allResults: IWinner[] = [];
+
+window.addEventListener('load', async () => await fillGarage(state.page));
+//     localStorage.setItem('page', JSON.stringify(state.page));
+// });
+
+export const fillGarage = async (page: number) => {
+    isLocalStorage();
+    console.log('load', page);
     await requestGetCars();
     await updateGarage(state.page);
 };
@@ -40,7 +47,7 @@ export const fillGarage = async () => {
 export const updateGarage = async (page: number) => {
     const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
     raceBlock.innerHTML = ``;
-    raceBlock.append(renderTitle());
+    raceBlock.append(renderTitle(page));
 
     state.cars[page].forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id))); //
 
@@ -49,7 +56,6 @@ export const updateGarage = async (page: number) => {
 
 //-------------------------DRIVE & STOP
 export const setCarActivity = async (e: Event, id: number) => {
-    // console.log(e.target);
     const btnA = e.target as HTMLButtonElement;
     const btnB = document.querySelector(`#b${id}`) as HTMLButtonElement;
     let params;
@@ -72,19 +78,33 @@ export const setCarActivity = async (e: Event, id: number) => {
         }
     }
 };
-const allResults: IWinner[] = [];
+
 export const findBestTime = (animation: Animation, carName: string, allResults: IWinner[]) => {
-    // const allResults: IWinner[] = [];
     if (animation.startTime && animation.currentTime && animation.effect) {
         const raceTime = animation.effect.getTiming().duration as number;
         allResults.push({ name: carName, result: +(raceTime / 1000).toFixed(2) });
     }
     if (allResults.length == 1) {
-        // renderWinMessage(allResults[0].name, allResults[0].result);
         showWinMessage();
     }
 };
 
+const animateCar = async (id: number, velocity: number) => {
+    const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
+    const parentEl = car.parentElement as HTMLDivElement;
+    const pathWidth: number = parentEl.offsetWidth;
+    const time = (pathWidth / velocity) * 1000;
+
+    const carKeyframes = new KeyframeEffect(
+        car,
+        [{ transform: 'translateY(0%)' }, { transform: `translate(${pathWidth + 60}px)` }],
+        { duration: time, fill: 'forwards' }
+    );
+    const carAnimation = new Animation(carKeyframes, document.timeline);
+    return carAnimation;
+};
+
+//--------------------------RACE
 export const showWinMessage = () => {
     const raceBlock = document.querySelector('.race-block') as HTMLDivElement;
     raceBlock.append(renderWinMessage(allResults[0].name, allResults[0].result));
@@ -125,21 +145,6 @@ export const startRace = async (cars: ICar[][], page: number) => {
     });
 };
 
-const animateCar = async (id: number, velocity: number) => {
-    const car = document.querySelector(`#car-${id}`) as HTMLSpanElement;
-    const parentEl = car.parentElement as HTMLDivElement;
-    const pathWidth: number = parentEl.offsetWidth;
-    const time = (pathWidth / velocity) * 1000;
-
-    const carKeyframes = new KeyframeEffect(
-        car,
-        [{ transform: 'translateY(0%)' }, { transform: `translate(${pathWidth + 60}px)` }],
-        { duration: time, fill: 'forwards' }
-    );
-    const carAnimation = new Animation(carKeyframes, document.timeline);
-    return carAnimation;
-};
-
 //-------------------------CREATE
 export const createCarParams = (): INewCar => {
     const carName = document.querySelector('.create-car-name') as HTMLInputElement;
@@ -154,6 +159,8 @@ export const createCarParams = (): INewCar => {
 
 export const createCar = async () => {
     const car: INewCar = createCarParams();
+    isLocalStorage();
+    console.log('craete', state.page);
     await requestCreateCar(car);
     await updateGarage(state.page);
     cleanInputs('.create-car-color', '.create-car-name');
@@ -161,16 +168,17 @@ export const createCar = async () => {
 
 export const create100Cars = async () => {
     const allCars = await requestCreate100Cars();
+    isLocalStorage();
     let flatCarsArray = state.cars.flat();
     flatCarsArray = [...flatCarsArray, ...allCars];
     state.cars = sliceIntoChunks(flatCarsArray, 7);
-    // console.log(state.cars);
     await updateGarage(state.page);
 };
 
 //-------------------------DELETE
 export const deleteCar = async (e: Event, id: number) => {
     const btnRemove = e.target as HTMLButtonElement;
+    isLocalStorage();
     if (btnRemove && btnRemove.id == `remove${id}`) {
         await requestDeleteCar(id);
         updateGarage(state.page);
@@ -195,6 +203,7 @@ export const selectCar = async (e: Event, id: number) => {
 export const updateCar = async () => {
     const currentCarColor = document.querySelector('.update-car-color') as HTMLInputElement;
     const currentCarName = document.querySelector('.update-car-name') as HTMLInputElement;
+    isLocalStorage();
 
     const flatCarsArray = state.cars.flat();
     if (currentCarName.value !== '') {
@@ -211,18 +220,22 @@ export const updateCar = async () => {
 
 export const showPrevPage = () => {
     const pageNumber = document.querySelector('.page-number') as HTMLSpanElement;
+    isLocalStorage();
     if (state.page > 0) {
         state.page -= 1;
     }
+    localStorage.setItem('page', JSON.stringify(state.page));
     pageNumber.innerHTML = `${state.page + 1}`;
     updateGarage(state.page);
 };
 
 export const showNextPage = () => {
     const pageNumber = document.querySelector('.page-number') as HTMLSpanElement;
+    isLocalStorage();
     if (state.page < state.cars.length - 1) {
         state.page += 1;
     }
+    localStorage.setItem('page', JSON.stringify(state.page));
     pageNumber.innerHTML = `${state.page + 1}`;
     updateGarage(state.page);
 };

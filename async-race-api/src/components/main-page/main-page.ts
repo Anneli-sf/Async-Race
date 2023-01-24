@@ -9,7 +9,7 @@ import {
 import { renderHeader } from './header/header';
 import './main-page.scss';
 
-export const renderTitle = (): HTMLDivElement => {
+export const renderTitle = (currPage: number): HTMLDivElement => {
     const raceHeader = createElement('div', 'race-header') as HTMLDivElement;
     const titleBlock = createElement('div', 'title-block') as HTMLDivElement;
     const pageBlock = createElement('div', 'page-block') as HTMLDivElement;
@@ -22,7 +22,7 @@ export const renderTitle = (): HTMLDivElement => {
     page.innerText = `Page`;
 
     const pageNumber = createElement('span', 'page-number') as HTMLSpanElement;
-    pageNumber.innerHTML = `${state.page + 1}`;
+    pageNumber.innerHTML = `${currPage + 1}`;
 
     const btnPrev = createButton('', 'btn-prev');
     const btnNext = createButton('', 'btn-next');
@@ -42,9 +42,9 @@ export const renderTitle = (): HTMLDivElement => {
     return raceHeader;
 };
 
-export const renderRaceBlock = (): HTMLDivElement => {
+export const renderRaceBlock = (currPage: number): HTMLDivElement => {
     const raceBlock = createElement('div', 'race-block') as HTMLDivElement;
-    raceBlock.append(renderTitle());
+    raceBlock.append(renderTitle(currPage));
     return raceBlock;
 };
 
@@ -99,9 +99,9 @@ export const renderCar = (carNameText: string, carColor: string, carId: number):
     return carBlock;
 };
 
-export const renderMainPage = (): HTMLElement => {
+export const renderMainPage = (page: number): HTMLElement => {
     const main = createElement('main', 'main') as HTMLElement;
-    main.append(renderHeader(), renderRaceBlock());
+    main.append(renderHeader(), renderRaceBlock(page));
     return main;
 };
 

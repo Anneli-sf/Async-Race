@@ -1,5 +1,5 @@
 import { ICar, INewCar, IState } from '../global-components/interfaces';
-import { cleanInputs, generateColor, generateName, sliceIntoChunks } from '../helpers/helpers';
+import { generateColor, generateName, sliceIntoChunks } from '../helpers/helpers';
 import { state } from '../ui/ui';
 
 const base = 'http://127.0.0.1:3000';
@@ -7,7 +7,6 @@ const garage = `${base}/garage`;
 const engine = `${base}/engine`;
 
 export async function requestGetCars() {
-    // console.log(page);
     return await fetch(`${garage}`)
         .then((res) => res.json())
         .then((car) => {
@@ -29,10 +28,8 @@ export const requestToDrive = async (id: number) => {
 };
 
 export const requestToStartRace = async (cars: ICar[], status: string) => {
-    //
     return await Promise.all(
         cars.flat().map(async (car) => {
-            //
             return await fetch(`${engine}?id=${car.id}&status=${status}`, {
                 method: 'PATCH',
             }).then((res) => res.json());
@@ -80,7 +77,6 @@ export const requestDeleteCar = async (id: number) => {
         .then((res) => res.json())
         .then(() => {
             let flatCarsArray: ICar[] = state.cars.flat();
-            console.log('del arr', flatCarsArray);
             flatCarsArray = flatCarsArray.filter((car) => car.id !== id);
             return (state.cars = sliceIntoChunks(flatCarsArray, 7));
         });
