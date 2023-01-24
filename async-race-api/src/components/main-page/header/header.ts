@@ -49,9 +49,11 @@ const createRaceBlock = (): HTMLDivElement => {
     });
 
     btnRace.addEventListener('click', async () => {
-        await startRace(state.cars, state.page);
-        btnReset.disabled = false;
-        btnRace.disabled = true;
+        if (state.cars.length > 0) {
+            await startRace(state.cars, state.page);
+            btnReset.disabled = false;
+            btnRace.disabled = true;
+        }
     });
 
     btnReset.addEventListener('click', async () => {

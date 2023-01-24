@@ -44,8 +44,6 @@ export const sliceIntoChunks = (arr: ICar[], chunkSize: number): ICar[][] => {
 };
 
 export const isLocalStorage = () => {
-    // let page = 0;
     const savedPage = localStorage.getItem('page') as string;
     savedPage && savedPage != null ? (state.page = JSON.parse(savedPage)) : (state.page = 0);
-    // return page;
 };

@@ -33,13 +33,10 @@ export const state: IState = {
 
 const allResults: IWinner[] = [];
 
-window.addEventListener('load', async () => await fillGarage(state.page));
-//     localStorage.setItem('page', JSON.stringify(state.page));
-// });
+window.addEventListener('load', async () => await fillGarage());
 
-export const fillGarage = async (page: number) => {
+export const fillGarage = async () => {
     isLocalStorage();
-    console.log('load', page);
     await requestGetCars();
     await updateGarage(state.page);
 };
@@ -49,7 +46,8 @@ export const updateGarage = async (page: number) => {
     raceBlock.innerHTML = ``;
     raceBlock.append(renderTitle(page));
 
-    state.cars[page].forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id))); //
+    if (state.cars.length > 0)
+        state.cars[page].forEach((item) => raceBlock.append(renderCar(item.name, item.color, item.id)));
 
     setCarsAmount();
 };
@@ -160,7 +158,6 @@ export const createCarParams = (): INewCar => {
 export const createCar = async () => {
     const car: INewCar = createCarParams();
     isLocalStorage();
-    console.log('craete', state.page);
     await requestCreateCar(car);
     await updateGarage(state.page);
     cleanInputs('.create-car-color', '.create-car-name');
